@@ -1,0 +1,35 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug geometry_tests (macOS)",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/build-debug/geometry_tests",
+			"cwd": "${workspaceFolder}",
+			"MIMode": "lldb",
+			"preLaunchTask": "build-debug",
+			"stopAtEntry": false
+		},
+		{
+			"name": "Debug geometry_tests (Linux)",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/build-debug/geometry_tests",
+			"cwd": "${workspaceFolder}",
+			"MIMode": "gdb",
+			"miDebuggerPath": "/usr/bin/gdb",
+			"preLaunchTask": "build-debug",
+			"stopAtEntry": false
+		},
+		{
+			"name": "Debug geometry_tests (Windows)",
+			"type": "cppvsdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/build-debug/geometry_tests.exe",
+			"cwd": "${workspaceFolder}",
+			"preLaunchTask": "build-debug",
+			"stopAtEntry": false
+		}
+	]
+}

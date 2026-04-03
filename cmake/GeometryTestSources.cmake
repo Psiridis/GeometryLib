@@ -1,0 +1,7 @@
+set(GEOMETRY_TEST_SOURCES
+  tests/Primitives/test_point.cpp
+  tests/Primitives/test_vector.cpp
+  tests/Primitives/test_line.cpp
+  tests/Primitives/test_ray.cpp
+  tests/Primitives/test_plane.cpp
+)
