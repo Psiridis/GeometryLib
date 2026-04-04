@@ -9,12 +9,12 @@ namespace Geometry
 	class Line
 	{
 		public:
-			Line (Point const& origin, Vector const& direction);
-			Line (Point const& p1, Point const& p2);
+			Line(Point const& origin, Vector const& direction);
+			Line(Point const& p1, Point const& p2);
 
-			[[nodiscard]] Point const& origin () const noexcept;
-			[[nodiscard]] Vector const& direction () const noexcept;
-			[[nodiscard]] Point at (double t) const noexcept;
+			[[nodiscard]] Point const& origin() const noexcept;
+			[[nodiscard]] Vector const& direction() const noexcept;
+			[[nodiscard]] Point at(double t) const noexcept;
 
 		private:
 			Point m_origin{};

@@ -55,10 +55,14 @@ Mark items with `[x]` as they are completed.
 **Design:** Free functions in `namespace Geometry`. Keeps classes unaware of each other.
 
 ### New header: `include/Geometry/Queries/intersect.hpp`
-- [ ] `intersect(Ray, Plane)`    → `std::optional<Point>`  — ray hits plane at t ≥ 0
-- [ ] `intersect(Line, Plane)`   → `std::optional<Point>`  — line hits plane
-- [ ] `intersect(Plane, Plane)`  → `std::optional<Line>`   — two planes intersect in a line
-- [ ] `intersect(Line, Line)`    → `std::optional<Point>`  — handles skew / parallel / intersecting
+- [x] `intersect(Ray, Plane)`    → `std::optional<Point>`  — ray hits plane at t ≥ 0
+- [x] `intersect(Line, Plane)`   → `std::optional<Point>`  — line hits plane
+- [x] `intersect(Plane, Plane)`  → `std::optional<Line>`   — two planes intersect in a line
+- [x] `intersect(Line, Line)`    → `std::optional<Point>`  — handles skew / parallel / intersecting
+
+### New header: `include/Geometry/Queries/parallel.hpp`
+- [x] `is_parallel(Line, Line)`   → `bool` — scale-independent sine test
+- [x] `is_parallel(Plane, Plane)` → `bool` — unit-normal sine test
 
 ### New header: `include/Geometry/Queries/project.hpp`
 - [ ] `project(Point, Line)`     → `Point`   — closest point on line
@@ -70,18 +74,20 @@ Mark items with `[x]` as they are completed.
 - [ ] `distance(Line, Line)`     → `double`  — skew-line distance
 
 ### New source files
-- [ ] `src/Queries/intersect.cpp`
+- [x] `src/Queries/intersect.cpp`
+- [x] `src/Queries/parallel.cpp`
 - [ ] `src/Queries/project.cpp`
 - [ ] `src/Queries/distance.cpp`
 
 ### Tests
-- [ ] `tests/Queries/test_intersect.cpp` — cover degenerate cases (parallel, skew, coincident) explicitly
+- [x] `tests/Queries/test_intersect.cpp` — cover degenerate cases (parallel, skew, coincident) explicitly
+- [x] `tests/Queries/test_parallel.cpp`
 - [ ] `tests/Queries/test_project.cpp`
 - [ ] `tests/Queries/test_distance.cpp`
 
 ### CMake
-- [ ] Add new source files to `cmake/GeometrySources.cmake`
-- [ ] Add new test files to `cmake/GeometryTestSources.cmake`
+- [x] Add new source files to `cmake/GeometrySources.cmake`
+- [x] Add new test files to `cmake/GeometryTestSources.cmake`
 
 ---
 

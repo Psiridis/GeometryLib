@@ -9,12 +9,12 @@ namespace Geometry
 	class Ray
 	{
 		public:
-			Ray (Point const& origin, Vector const& direction);
-			Ray (Point const& origin, Point const& point_on_ray);
+			Ray(Point const& origin, Vector const& direction);
+			Ray(Point const& origin, Point const& point_on_ray);
 
-			[[nodiscard]] Point const& origin () const noexcept;
-			[[nodiscard]] Vector const& direction () const noexcept;
-			[[nodiscard]] Point at (double t) const;
+			[[nodiscard]] Point const& origin() const noexcept;
+			[[nodiscard]] Vector const& direction() const noexcept;
+			[[nodiscard]] Point at(double t) const;
 
 		private:
 			Point m_origin{};

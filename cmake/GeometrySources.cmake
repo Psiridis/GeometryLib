@@ -5,4 +5,6 @@ set(GEOMETRY_SOURCES
   src/Primitives/ray.cpp
   src/Primitives/plane.cpp
   src/utils/numerical_utils.cpp
+  src/Queries/intersect.cpp
+  src/Queries/parallel.cpp
 )

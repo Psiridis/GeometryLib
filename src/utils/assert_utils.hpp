@@ -13,7 +13,7 @@
 		{                                                                             \
 			std::cerr << "GEOM_ASSERT failed: " << #condition << "\nFile: " << __FILE__ \
 								<< "\nLine: " << __LINE__ << std::endl;                           \
-			std::abort ();                                                              \
+			std::abort();                                                               \
 		}                                                                             \
 	} while (false)
 

@@ -4,4 +4,6 @@ set(GEOMETRY_TEST_SOURCES
   tests/Primitives/test_line.cpp
   tests/Primitives/test_ray.cpp
   tests/Primitives/test_plane.cpp
+  tests/Queries/test_intersect.cpp
+  tests/Queries/test_parallel.cpp
 )

@@ -9,15 +9,15 @@ namespace Geometry
 	class Plane
 	{
 		public:
-			Plane (Point const& point, Vector const& normal);
-			Plane (Point const& p1, Point const& p2, Point const& p3);
+			Plane(Point const& point, Vector const& normal);
+			Plane(Point const& p1, Point const& p2, Point const& p3);
 
-			[[nodiscard]] Vector const& normal () const noexcept;
+			[[nodiscard]] Vector const& normal() const noexcept;
 
-			[[nodiscard]] double signed_distance (Point const& p) const noexcept;
-			[[nodiscard]] double distance (Point const& p) const noexcept;
+			[[nodiscard]] double signed_distance(Point const& p) const noexcept;
+			[[nodiscard]] double distance(Point const& p) const noexcept;
 			[[nodiscard]] bool
-			contains (Point const& p, double abs_eps = 1e-12, double rel_eps = 1e-9) const noexcept;
+			contains(Point const& p, double abs_eps = 1e-12, double rel_eps = 1e-9) const noexcept;
 
 		private:
 			Point m_point{};
