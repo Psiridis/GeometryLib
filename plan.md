@@ -89,6 +89,25 @@ Mark items with `[x]` as they are completed.
 - [x] Add new source files to `cmake/GeometrySources.cmake`
 - [x] Add new test files to `cmake/GeometryTestSources.cmake`
 
+### README
+- [ ] Update introduction paragraph — mention spatial queries alongside primitives
+- [ ] Reconsider the project layout section:
+  - The current full file tree will not scale beyond Phase 1 — by Phase 3 it will
+    cover dozens of files across Shapes/, Transform/, Curves/, Surfaces/, Topology/, IO/
+  - Preferred approach: switch to a **layer-level tree** (one entry per directory,
+    with a short description) rather than listing every individual file
+  - Example structure to target:
+    ```
+    include/Geometry/
+    ├── Primitives/    # point, vector, line, ray, plane
+    ├── Queries/       # intersect, parallel, project, distance
+    ├── Shapes/        # segment, triangle, circle, bounding box  (Phase 2)
+    └── Transform/     # matrix, transform, coordinate frame      (Phase 3)
+    src/               # mirrors include/ layout
+    tests/             # mirrors include/ layout
+    ```
+  - Update `numerical_utils` description to include `k_abs_eps`, `k_rel_eps`, `safe_acos`
+
 ---
 
 ## Phase 2 — Bounded Shapes (Layer 2 Geometry)
