@@ -72,21 +72,21 @@ Mark items with `[x]` as they are completed.
 - [x] `project(Line, Plane)`       → `std::optional<Line>`  — nullopt if line is perpendicular to the plane
 
 ### New header: `include/Geometry/Queries/distance.hpp`
-- [ ] `distance(Point, Line)`    → `double`  — point-to-line distance
-- [ ] `distance(Point, Plane)`   → `double`  — free-function wrapper around `Plane::distance()`
-- [ ] `distance(Line, Line)`     → `double`  — skew-line distance
+- [x] `distance(Point, Line)`    → `double`  — point-to-line distance
+- [x] `distance(Point, Plane)`   → `double`  — free-function wrapper around `Plane::distance()`
+- [x] `distance(Line, Line)`     → `double`  — skew-line distance
 
 ### New source files
 - [x] `src/Queries/intersect.cpp`
 - [x] `src/Queries/parallel.cpp`
 - [x] `src/Queries/project.cpp`
-- [ ] `src/Queries/distance.cpp`
+- [x] `src/Queries/distance.cpp`
 
 ### Tests
 - [x] `tests/Queries/test_intersect.cpp` — cover degenerate cases (parallel, skew, coincident) explicitly
 - [x] `tests/Queries/test_parallel.cpp`
 - [x] `tests/Queries/test_project.cpp`
-- [ ] `tests/Queries/test_distance.cpp`
+- [x] `tests/Queries/test_distance.cpp`
 
 ### CMake
 - [x] Add new source files to `cmake/GeometrySources.cmake`

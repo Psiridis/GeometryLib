@@ -7,4 +7,5 @@ set(GEOMETRY_TEST_SOURCES
   tests/Queries/test_intersect.cpp
   tests/Queries/test_parallel.cpp
   tests/Queries/test_project.cpp
+  tests/Queries/test_distance.cpp
 )

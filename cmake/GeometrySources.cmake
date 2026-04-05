@@ -8,4 +8,5 @@ set(GEOMETRY_SOURCES
   src/Queries/intersect.cpp
   src/Queries/parallel.cpp
   src/Queries/project.cpp
+  src/Queries/distance.cpp
 )
