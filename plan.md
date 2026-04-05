@@ -65,8 +65,11 @@ Mark items with `[x]` as they are completed.
 - [x] `is_parallel(Plane, Plane)` → `bool` — unit-normal sine test
 
 ### New header: `include/Geometry/Queries/project.hpp`
-- [ ] `project(Point, Line)`     → `Point`   — closest point on line
-- [ ] `project(Point, Plane)`    → `Point`   — closest point on plane
+- [x] `project(Point, Line)`       → `Point`                — closest point on line
+- [x] `project(Point, Ray)`        → `Point`                — closest point on ray (t clamped to [0, ∞))
+- [x] `project(Point, Plane)`      → `Point`                — closest point on plane
+- [x] `project(Vector, Plane)`     → `Vector`               — tangential component; zero vector if perpendicular
+- [x] `project(Line, Plane)`       → `std::optional<Line>`  — nullopt if line is perpendicular to the plane
 
 ### New header: `include/Geometry/Queries/distance.hpp`
 - [ ] `distance(Point, Line)`    → `double`  — point-to-line distance
@@ -76,13 +79,13 @@ Mark items with `[x]` as they are completed.
 ### New source files
 - [x] `src/Queries/intersect.cpp`
 - [x] `src/Queries/parallel.cpp`
-- [ ] `src/Queries/project.cpp`
+- [x] `src/Queries/project.cpp`
 - [ ] `src/Queries/distance.cpp`
 
 ### Tests
 - [x] `tests/Queries/test_intersect.cpp` — cover degenerate cases (parallel, skew, coincident) explicitly
 - [x] `tests/Queries/test_parallel.cpp`
-- [ ] `tests/Queries/test_project.cpp`
+- [x] `tests/Queries/test_project.cpp`
 - [ ] `tests/Queries/test_distance.cpp`
 
 ### CMake

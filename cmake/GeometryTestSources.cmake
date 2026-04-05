@@ -6,4 +6,5 @@ set(GEOMETRY_TEST_SOURCES
   tests/Primitives/test_plane.cpp
   tests/Queries/test_intersect.cpp
   tests/Queries/test_parallel.cpp
+  tests/Queries/test_project.cpp
 )

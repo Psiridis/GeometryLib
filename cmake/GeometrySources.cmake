@@ -7,4 +7,5 @@ set(GEOMETRY_SOURCES
   src/utils/numerical_utils.cpp
   src/Queries/intersect.cpp
   src/Queries/parallel.cpp
+  src/Queries/project.cpp
 )
