@@ -93,8 +93,8 @@ Mark items with `[x]` as they are completed.
 - [x] Add new test files to `cmake/GeometryTestSources.cmake`
 
 ### README
-- [ ] Update introduction paragraph — mention spatial queries alongside primitives
-- [ ] Reconsider the project layout section:
+- [x] Update introduction paragraph — mention spatial queries alongside primitives
+- [x] Reconsider the project layout section:
   - The current full file tree will not scale beyond Phase 1 — by Phase 3 it will
     cover dozens of files across Shapes/, Transform/, Curves/, Surfaces/, Topology/, IO/
   - Preferred approach: switch to a **layer-level tree** (one entry per directory,

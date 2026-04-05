@@ -1,6 +1,6 @@
 # GeometryLib
 
-GeometryLib is a C++20 3D geometry library built with CMake. It provides analytic geometry primitives — points, vectors, lines, rays, and planes — with a clean, well-tested API and correct floating-point comparisons throughout.
+GeometryLib is a C++20 3D geometry library built with CMake. It provides analytic geometry primitives — points, vectors, lines, rays, and planes — together with a spatial query layer covering intersection, parallelism, projection, and distance operations. The API is clean, well-tested, and uses scale-independent floating-point comparisons throughout.
 
 The project exports an installable library target (`GeometryLib::Geometry`), ships CMake package configuration files for downstream `find_package` consumers, and uses GoogleTest for unit testing.
 
@@ -12,34 +12,35 @@ Geometry/
 ├── CMakePresets.json
 ├── cmake/
 │   ├── GeometryLibConfig.cmake.in
-│   ├── GeometrySources.cmake
-│   └── GeometryTestSources.cmake
+│   ├── GeometrySources.cmake        # lists all library source files
+│   └── GeometryTestSources.cmake   # lists all test source files
 ├── include/Geometry/
-│   └── Primitives/
-│       ├── point.hpp        # 3D point — distance, equality, arithmetic with Vector
-│       ├── vector.hpp       # 3D vector — length, normalize, dot, cross, angle, arithmetic
-│       ├── line.hpp         # Infinite line — origin + direction, parametric at(t)
-│       ├── ray.hpp          # Semi-infinite ray — origin + direction, at(t) for t ≥ 0
-│       └── plane.hpp        # Infinite plane — point + unit normal, signed distance, contains()
-├── src/
-│   ├── Primitives/
-│   │   ├── point.cpp
-│   │   ├── vector.cpp
-│   │   ├── line.cpp
-│   │   ├── ray.cpp
-│   │   └── plane.cpp
-│   └── utils/
-│       ├── numerical_utils.hpp   # almost_equal(a, b, abs_eps, rel_eps)
-│       ├── numerical_utils.cpp
-│       └── assert_utils.hpp      # GEOM_ASSERT — aborts in debug, no-op in release
-└── tests/
-    └── Primitives/
-        ├── test_point.cpp
-        ├── test_vector.cpp
-        ├── test_line.cpp
-        ├── test_ray.cpp
-        └── test_plane.cpp
+│   ├── Primitives/   # point, vector, line, ray, plane
+│   └── Queries/      # intersect, parallel, project, distance
+├── src/              # mirrors include/ layout; also contains utils/
+└── tests/            # mirrors include/ layout
 ```
+
+### Public API overview
+
+**Primitives** (`include/Geometry/Primitives/`)
+
+| Header | Type | Key operations |
+|---|---|---|
+| `point.hpp` | `Point` | distance, equality, arithmetic with `Vector` |
+| `vector.hpp` | `Vector` | length, normalize, dot, cross, angle, arithmetic |
+| `line.hpp` | `Line` | origin + direction, parametric `at(t)` |
+| `ray.hpp` | `Ray` | semi-infinite line, `at(t)` for t ≥ 0 |
+| `plane.hpp` | `Plane` | point + unit normal, `signed_distance`, `contains` |
+
+**Queries** (`include/Geometry/Queries/`) — free functions in `namespace Geometry`
+
+| Header | Functions |
+|---|---|
+| `intersect.hpp` | `intersect(Ray, Plane)`, `intersect(Line, Plane)`, `intersect(Plane, Plane)`, `intersect(Line, Line)` |
+| `parallel.hpp` | `is_parallel(Line, Line)`, `is_parallel(Plane, Plane)` |
+| `project.hpp` | `project(Point, Line)`, `project(Point, Ray)`, `project(Point, Plane)`, `project(Vector, Plane)`, `project(Line, Plane)` |
+| `distance.hpp` | `distance(Point, Line)`, `distance(Point, Plane)`, `distance(Line, Line)` |
 
 ## Requirements
 
@@ -182,4 +183,4 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/Geometry/install
 - GoogleTest is fetched only when `BUILD_TESTING` is enabled.
 - The exported target name for consumers is `GeometryLib::Geometry`.
 - `GEOM_ASSERT(condition)` fires before every `throw` in debug builds, providing an early abort with file and line info. Both mechanisms remain active — the assert for development, the throw for release-time error handling by callers.
-- Floating-point equality uses a combined absolute + relative epsilon comparison (`almost_equal`) defined in `src/utils/numerical_utils.hpp`.
+- Floating-point comparisons use `almost_equal(a, b)` from `src/utils/numerical_utils.hpp`. Shared tolerance constants `k_abs_eps` (1e-12) and `k_rel_eps` (1e-9) are defined there and used consistently across all modules. All threshold checks in the query layer are scale-independent (squared ratios, no raw absolute distances). `safe_acos(x)` clamps its argument to [-1, 1] before calling `std::acos` to prevent NaN from floating-point rounding.
