@@ -2,8 +2,6 @@
 
 #include "Geometry/Queries/parallel.hpp"
 
-#include <cmath>
-
 #include "utils/numerical_utils.hpp"
 
 namespace Geometry
@@ -19,7 +17,9 @@ namespace Geometry
 	{
 		double denom = plane.normal().dot(ray.direction());
 
-		if (utils::almost_equal(denom, 0.0))
+		// Scale-independent: sin²(angle) = (n·d)² / |d|² < k_rel_eps²
+		// Since n is unit this reduces to: denom² < k_rel_eps² · |d|²
+		if (denom * denom < utils::k_rel_eps * utils::k_rel_eps * ray.direction().length_squared())
 			return std::nullopt; // ray is parallel to (or lies in) the plane
 
 		double t = -plane.signed_distance(ray.origin()) / denom;
@@ -38,7 +38,9 @@ namespace Geometry
 	{
 		double denom = plane.normal().dot(line.direction());
 
-		if (utils::almost_equal(denom, 0.0))
+		// Scale-independent: sin²(angle) = (n·d)² / |d|² < k_rel_eps²
+		// Since n is unit this reduces to: denom² < k_rel_eps² · |d|²
+		if (denom * denom < utils::k_rel_eps * utils::k_rel_eps * line.direction().length_squared())
 			return std::nullopt; // line is parallel to (or lies in) the plane
 
 		double t = -plane.signed_distance(line.origin()) / denom;
@@ -91,11 +93,17 @@ namespace Geometry
 		Vector cross = line1.direction().cross(line2.direction());
 		double len2	 = cross.length_squared();
 
-		Vector w				= line2.origin() - line1.origin();
-		double skew_num = w.dot(cross); // = w · (d₁ × d₂)
+		Vector const w				= line2.origin() - line1.origin();
+		double const skew_num = w.dot(cross); // = w · (d₁ × d₂)
 
-		// Skew distance = |skew_num| / |cross|.  Threshold: k_rel_eps × |cross|.
-		if (std::abs(skew_num) > utils::k_rel_eps * std::sqrt(len2))
+		// Scale-independent skew test:
+		//   skew_distance = |skew_num| / |cross|
+		//   Normalise by |w| to get a dimensionless ratio:
+		//     (skew_distance / |w|)² < k_rel_eps²
+		//   ↔ skew_num² < k_rel_eps² · |cross|² · |w|²
+		// When |w| ≈ 0 (coincident origins) both sides → 0, test passes correctly.
+		double const w_len2 = w.length_squared();
+		if (skew_num * skew_num > utils::k_rel_eps * utils::k_rel_eps * len2 * w_len2)
 			return std::nullopt; // lines are skew
 
 		double s = w.cross(line2.direction()).dot(cross) / len2;

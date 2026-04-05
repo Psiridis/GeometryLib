@@ -311,3 +311,104 @@ TEST(IntersectLineLine, Skew3DLines)
 
 	EXPECT_FALSE(result.has_value());
 }
+
+// ── Adversarial / robustness tests ───────────────────────────────────────────
+//
+// These tests verify scale-independence and translation-independence.
+// Clean textbook inputs are not sufficient for a geometry library; these cover
+// the cases most likely to expose tolerance bugs.
+
+// ── Ray ∩ Plane (adversarial) ─────────────────────────────────────────────────
+
+TEST(IntersectRayPlaneAdversarial, LargeCoordinateOriginHitsPlane)
+{
+	// Ray starts far from origin along z; direction is unit — must still intersect
+	Ray ray(Point(0.0, 0.0, 1.0e7), Vector(0.0, 0.0, -1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	auto result = intersect(ray, plane);
+
+	ASSERT_TRUE(result.has_value());
+	EXPECT_NEAR(result->x(), 0.0, kTol);
+	EXPECT_NEAR(result->y(), 0.0, kTol);
+	EXPECT_NEAR(result->z(), 0.0, kTol);
+}
+
+TEST(IntersectRayPlaneAdversarial, ScaledDirectionGivesSameIntersection)
+{
+	// Scaling direction by 1e6 must not change the intersection point
+	Ray ray(Point(0.0, 0.0, 1.0), Vector(0.0, 0.0, -1.0e6));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	auto result = intersect(ray, plane);
+
+	ASSERT_TRUE(result.has_value());
+	EXPECT_NEAR(result->z(), 0.0, kTol);
+}
+
+TEST(IntersectRayPlaneAdversarial, NearlyParallelRayWithLargeDirection)
+{
+	// Direction (1e6, 0, 1e-10): sin(angle with plane) = 1e-10 / 1e6 = 1e-16
+	// Well below k_rel_eps → should be treated as parallel → nullopt
+	Ray ray(Point(0.0, 0.0, 1.0), Vector(1.0e6, 0.0, 1.0e-10));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	auto result = intersect(ray, plane);
+
+	EXPECT_FALSE(result.has_value());
+}
+
+// ── Line ∩ Line (adversarial) ─────────────────────────────────────────────────
+
+TEST(IntersectLineLineAdversarial, IntersectingLinesTranslatedFarFromOrigin)
+{
+	// Same crossing geometry as a basic test, translated 1e6 along all axes
+	double const offset = 1.0e6;
+	Line line1(Point(offset, offset, offset), Vector(1.0, 0.0, 0.0));
+	Line line2(Point(offset + 2.0, offset, offset), Vector(0.0, 1.0, 0.0));
+
+	auto result = intersect(line1, line2);
+
+	ASSERT_TRUE(result.has_value());
+	EXPECT_NEAR(result->x(), offset + 2.0, kTol);
+	EXPECT_NEAR(result->y(), offset, kTol);
+	EXPECT_NEAR(result->z(), offset, kTol);
+}
+
+TEST(IntersectLineLineAdversarial, SkewLinesWithLargeCoordinates)
+{
+	// Same skew geometry (separation = 1) as a basic test, origins translated 1e6
+	double const offset = 1.0e6;
+	Line line1(Point(offset, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Line line2(Point(offset, 0.0, 1.0), Vector(0.0, 1.0, 0.0));
+
+	auto result = intersect(line1, line2);
+
+	EXPECT_FALSE(result.has_value());
+}
+
+TEST(IntersectLineLineAdversarial, NearlyCoplanarLinesAcceptedAsIntersecting)
+{
+	// Two lines with sub-threshold skew distance (1e-12) must be treated as
+	// intersecting. Skew_distance = 1e-12, |w| ≈ 1, relative ratio = 1e-12 << k_rel_eps.
+	Line line1(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Line line2(Point(1.0, 0.0, 1.0e-12), Vector(0.0, 1.0, 0.0));
+
+	// w = (1,0,1e-12), cross = (0,0,1)×... actually:
+	// cross = (1,0,0)×(0,1,0) = (0,0,1), skew_num = w·cross = 1e-12
+	// |cross| = 1, |w| ≈ 1 → relative ratio = 1e-12 << 1e-9 → intersects
+	auto result = intersect(line1, line2);
+
+	EXPECT_TRUE(result.has_value());
+}
+
+TEST(IntersectLineLineAdversarial, ScaledDirectionsGiveSameClassification)
+{
+	// Scaling both line directions by 1e3 must not change skew/intersect outcome
+	Line line1(Point(0.0, 0.0, 0.0), Vector(1.0e3, 0.0, 0.0));
+	Line line2(Point(0.0, 0.0, 1.0), Vector(0.0, 1.0e3, 0.0)); // skew by 1
+
+	auto result = intersect(line1, line2);
+
+	EXPECT_FALSE(result.has_value()); // still skew
+}
