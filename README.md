@@ -44,6 +44,7 @@ open docs/html/index.html
 - A C++20-capable compiler
 - Ninja
 - Git when configuring a build with tests enabled, because GoogleTest is fetched at configure time
+- Doxygen (optional — only required to build the documentation locally)
 
 Notes:
 - The provided presets use the Ninja generator explicitly.

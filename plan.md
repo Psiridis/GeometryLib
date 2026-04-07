@@ -8,6 +8,16 @@ Mark items with `[x]` as they are completed.
 
 ---
 
+## Tooling & Infrastructure
+
+- [x] Doxygen comments added to all headers (`///` style)
+- [x] `Doxyfile` at project root — reads `include/` recursively, outputs to `docs/html/`, uses `README.md` as main page
+- [x] GitHub Actions workflow `.github/workflows/docs.yml` — generates and deploys docs to GitHub Pages on every push to `main`
+- [x] `docs/` added to `.gitignore`
+- [x] README updated: Docs badge, live Pages URL, Doxygen listed as optional requirement
+
+---
+
 ## Phase 0 — Consolidate *(current)*
 
 **Goal:** Close known gaps before adding new code.
