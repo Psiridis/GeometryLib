@@ -1,5 +1,7 @@
 # GeometryLib
 
+[![Docs](https://github.com/Psiridis/GeometryLib/actions/workflows/docs.yml/badge.svg)](https://psiridis.github.io/GeometryLib/)
+
 GeometryLib is a C++20 3D geometry library built with CMake. It provides analytic geometry primitives — points, vectors, lines, rays, and planes — a bounded shapes layer — segments, triangles, circles, and axis-aligned bounding boxes — and a spatial query layer covering intersection, parallelism, projection, and distance operations. The API is clean, well-tested, and uses scale-independent floating-point comparisons throughout.
 
 The project exports an installable library target (`GeometryLib::Geometry`), ships CMake package configuration files for downstream `find_package` consumers, and uses GoogleTest for unit testing.
@@ -24,14 +26,17 @@ Geometry/
 
 ## API documentation
 
-Doxygen documentation is generated from the `///` comments in the headers.
+The documentation is published automatically at:
+**[https://psiridis.github.io/GeometryLib/](https://psiridis.github.io/GeometryLib/)**
+
+It is regenerated on every push to `main` via the GitHub Actions workflow in `.github/workflows/docs.yml`.
+
+To build the docs locally:
 
 ```bash
 doxygen Doxyfile
 open docs/html/index.html
 ```
-
-The `Doxyfile` at the project root is configured to read `include/` recursively and write HTML output to `docs/html/`. The generated `docs/` directory is excluded from version control.
 
 ## Requirements
 
