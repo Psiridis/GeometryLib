@@ -9,4 +9,5 @@ set(GEOMETRY_SOURCES
   src/Queries/parallel.cpp
   src/Queries/project.cpp
   src/Queries/distance.cpp
+  src/Shapes/segment.cpp
 )
