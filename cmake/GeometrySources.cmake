@@ -10,4 +10,5 @@ set(GEOMETRY_SOURCES
   src/Queries/project.cpp
   src/Queries/distance.cpp
   src/Shapes/segment.cpp
+  src/Shapes/triangle.cpp
 )

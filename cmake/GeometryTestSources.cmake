@@ -9,4 +9,5 @@ set(GEOMETRY_TEST_SOURCES
   tests/Queries/test_project.cpp
   tests/Queries/test_distance.cpp
   tests/Shapes/test_segment.cpp
+  tests/Shapes/test_triangle.cpp
 )
