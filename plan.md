@@ -118,42 +118,42 @@ Mark items with `[x]` as they are completed.
 **Goal:** Finite geometric shapes built on top of Layer 1 primitives.
 
 ### New class: `Segment`
-- [ ] Header `include/Geometry/Shapes/segment.hpp`
-- [ ] Source `src/Shapes/segment.cpp`
-- [ ] `Segment(Point, Point)` — throws if points are coincident
-- [ ] `start()`, `end()` accessors
-- [ ] `length()`, `length_squared()`
-- [ ] `midpoint()`
-- [ ] `direction()` — unit vector from start to end
-- [ ] `at(double t)` — parametric point on [0, 1]
-- [ ] `contains(Point)` — point lies on segment within tolerance
-- [ ] `operator==`, `operator!=`
-- [ ] Tests `tests/Shapes/test_segment.cpp`
+- [x] Header `include/Geometry/Shapes/segment.hpp`
+- [x] Source `src/Shapes/segment.cpp`
+- [x] `Segment(Point, Point)` — throws if points are coincident
+- [x] `start()`, `end()` accessors
+- [x] `length()`, `length_squared()`
+- [x] `midpoint()`
+- [x] `direction()` — unit vector from start to end
+- [x] `at(double t)` — parametric point on [0, 1]
+- [x] `contains(Point)` — point lies on segment within tolerance
+- [x] `operator==`, `operator!=`
+- [x] Tests `tests/Shapes/test_segment.cpp`
 
 ### New class: `Triangle`
-- [ ] Header `include/Geometry/Shapes/triangle.hpp`
-- [ ] Source `src/Shapes/triangle.cpp`
-- [ ] `Triangle(Point, Point, Point)` — throws if points are collinear
-- [ ] `p0()`, `p1()`, `p2()` accessors
-- [ ] `normal()` — unit normal (consistent winding order)
-- [ ] `area()`
-- [ ] `centroid()`
-- [ ] `perimeter()`
-- [ ] `contains(Point)` — barycentric test
-- [ ] `plane()` — the supporting plane
-- [ ] `operator==`, `operator!=`
-- [ ] Tests `tests/Shapes/test_triangle.cpp`
+- [x] Header `include/Geometry/Shapes/triangle.hpp`
+- [x] Source `src/Shapes/triangle.cpp`
+- [x] `Triangle(Point, Point, Point)` — throws if points are collinear
+- [x] `p0()`, `p1()`, `p2()` accessors
+- [x] `normal()` — unit normal (consistent winding order)
+- [x] `area()`
+- [x] `centroid()`
+- [x] `perimeter()`
+- [x] `contains(Point)` — barycentric test
+- [x] `plane()` — the supporting plane
+- [x] `operator==`, `operator!=`
+- [x] Tests `tests/Shapes/test_triangle.cpp`
 
 ### New class: `Circle`
-- [ ] Header `include/Geometry/Shapes/circle.hpp`
-- [ ] Source `src/Shapes/circle.cpp`
-- [ ] `Circle(Point center, Vector normal, double radius)`
-- [ ] `center()`, `normal()`, `radius()` accessors
-- [ ] `area()`, `circumference()`
-- [ ] `contains(Point)` — point lies within circle (on its plane, within radius)
-- [ ] `plane()` — the supporting plane
-- [ ] `operator==`, `operator!=`
-- [ ] Tests `tests/Shapes/test_circle.cpp`
+- [x] Header `include/Geometry/Shapes/circle.hpp`
+- [x] Source `src/Shapes/circle.cpp`
+- [x] `Circle(Point center, Vector normal, double radius)`
+- [x] `center()`, `normal()`, `radius()` accessors
+- [x] `area()`, `circumference()`
+- [x] `contains(Point)` — point lies within circle (on its plane, within radius)
+- [x] `plane()` — the supporting plane
+- [x] `operator==`, `operator!=`
+- [x] Tests `tests/Shapes/test_circle.cpp`
 
 ### New class: `BoundingBox` (AABB)
 - [ ] Header `include/Geometry/Shapes/bounding_box.hpp`
@@ -174,8 +174,8 @@ Mark items with `[x]` as they are completed.
 - [ ] `intersect(Segment, Plane)`    → `std::optional<Point>`
 
 ### CMake
-- [ ] Add new source files to `cmake/GeometrySources.cmake`
-- [ ] Add new test files to `cmake/GeometryTestSources.cmake`
+- [x] Add new source files to `cmake/GeometrySources.cmake`
+- [x] Add new test files to `cmake/GeometryTestSources.cmake`
 
 ---
 
