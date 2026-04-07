@@ -47,8 +47,24 @@ namespace Geometry
 			Point m_p0{};
 			Point m_p1{};
 			Point m_p2{};
-			Vector m_normal{}; ///< cached unit normal
-			double m_area{};	 ///< cached area (½|cross|)
+
+			// m_normal and m_area are derived from the three vertices but are cached
+			// for two concrete reasons:
+			//
+			// 1. noexcept guarantees — computing the normal on demand requires
+			//    normalized(), which can throw on a zero-length vector.  With the
+			//    cached value, normal() and area() are unconditionally noexcept.
+			//
+			// 2. contains() reuse — the cross-product sign test in contains() depends
+			//    on m_normal.  In mesh or BVH workloads a single triangle may be
+			//    tested against thousands of query points; recomputing the normal
+			//    each time would add a cross product + sqrt + division per call.
+			//
+			// Both values are computed once during construction (cost paid upfront)
+			// and are read-only thereafter.  The added storage cost is 32 bytes per
+			// Triangle instance (one Vector + one double).
+			Vector m_normal{};
+			double m_area{};
 	};
 } // namespace Geometry
 
