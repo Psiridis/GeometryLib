@@ -1,6 +1,6 @@
 # GeometryLib
 
-GeometryLib is a C++20 3D geometry library built with CMake. It provides analytic geometry primitives — points, vectors, lines, rays, and planes — together with a spatial query layer covering intersection, parallelism, projection, and distance operations. The API is clean, well-tested, and uses scale-independent floating-point comparisons throughout.
+GeometryLib is a C++20 3D geometry library built with CMake. It provides analytic geometry primitives — points, vectors, lines, rays, and planes — a bounded shapes layer — segments, triangles, circles, and axis-aligned bounding boxes — and a spatial query layer covering intersection, parallelism, projection, and distance operations. The API is clean, well-tested, and uses scale-independent floating-point comparisons throughout.
 
 The project exports an installable library target (`GeometryLib::Geometry`), ships CMake package configuration files for downstream `find_package` consumers, and uses GoogleTest for unit testing.
 
@@ -16,31 +16,22 @@ Geometry/
 │   └── GeometryTestSources.cmake   # lists all test source files
 ├── include/Geometry/
 │   ├── Primitives/   # point, vector, line, ray, plane
+│   ├── Shapes/       # segment, triangle, circle, bounding_box
 │   └── Queries/      # intersect, parallel, project, distance
 ├── src/              # mirrors include/ layout; also contains utils/
 └── tests/            # mirrors include/ layout
 ```
 
-### Public API overview
+## API documentation
 
-**Primitives** (`include/Geometry/Primitives/`)
+Doxygen documentation is generated from the `///` comments in the headers.
 
-| Header | Type | Key operations |
-|---|---|---|
-| `point.hpp` | `Point` | distance, equality, arithmetic with `Vector` |
-| `vector.hpp` | `Vector` | length, normalize, dot, cross, angle, arithmetic |
-| `line.hpp` | `Line` | origin + direction, parametric `at(t)` |
-| `ray.hpp` | `Ray` | semi-infinite line, `at(t)` for t ≥ 0 |
-| `plane.hpp` | `Plane` | point + unit normal, `signed_distance`, `contains` |
+```bash
+doxygen Doxyfile
+open docs/html/index.html
+```
 
-**Queries** (`include/Geometry/Queries/`) — free functions in `namespace Geometry`
-
-| Header | Functions |
-|---|---|
-| `intersect.hpp` | `intersect(Ray, Plane)`, `intersect(Line, Plane)`, `intersect(Plane, Plane)`, `intersect(Line, Line)` |
-| `parallel.hpp` | `is_parallel(Line, Line)`, `is_parallel(Plane, Plane)` |
-| `project.hpp` | `project(Point, Line)`, `project(Point, Ray)`, `project(Point, Plane)`, `project(Vector, Plane)`, `project(Line, Plane)` |
-| `distance.hpp` | `distance(Point, Line)`, `distance(Point, Plane)`, `distance(Line, Line)` |
+The `Doxyfile` at the project root is configured to read `include/` recursively and write HTML output to `docs/html/`. The generated `docs/` directory is excluded from version control.
 
 ## Requirements
 

@@ -5,27 +5,35 @@ namespace Geometry
 {
 	class Vector;
 
+	/// A point in 3D Euclidean space represented by (x, y, z) coordinates.
+	/// Points are value types: copyable, default-constructible to the origin.
 	class Point
 	{
 		public:
 			constexpr Point() noexcept = default;
 			constexpr Point(double x, double y, double z) noexcept;
 
-			constexpr double x() const noexcept;
-			constexpr double y() const noexcept;
-			constexpr double z() const noexcept;
+			constexpr double x() const noexcept; ///< x coordinate.
+			constexpr double y() const noexcept; ///< y coordinate.
+			constexpr double z() const noexcept; ///< z coordinate.
 
+			/// Euclidean distance to another point.
 			[[nodiscard]] double distance(Point const& p) const;
+
+			/// Squared Euclidean distance — cheaper than distance() when only comparison is needed.
 			[[nodiscard]] double distance_squared(Point const& p) const noexcept;
 
+			/// Vector from this point to \p other (other - this).
 			[[nodiscard]] Vector operator-(Point const& other) const noexcept;
 
 			[[nodiscard]] bool operator==(Point const& p) const noexcept;
 			[[nodiscard]] bool operator!=(Point const& p) const noexcept;
 
+			/// Translates this point by vector \p v.
 			[[nodiscard]] Point operator+(Vector const& v) const noexcept;
 			Point& operator+=(Vector const& v) noexcept;
 
+			/// Translates this point by the negation of vector \p v.
 			[[nodiscard]] Point operator-(Vector const& v) const noexcept;
 			Point& operator-=(Vector const& v) noexcept;
 

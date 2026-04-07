@@ -1,0 +1,39 @@
+# Doxyfile — minimal configuration for GeometryLib
+# Only non-default values are listed here.
+# Run: doxygen Doxyfile
+# Output: docs/html/index.html
+
+PROJECT_NAME        = "GeometryLib"
+PROJECT_BRIEF       = "C++20 3D geometry library"
+OUTPUT_DIRECTORY    = docs
+
+INPUT               = include
+RECURSIVE           = YES
+FILE_PATTERNS       = *.hpp
+
+# Treat the first sentence of a /// or /** comment as the brief description.
+JAVADOC_AUTOBRIEF   = YES
+QT_AUTOBRIEF        = YES
+
+# Do not document private members or undocumented symbols.
+EXTRACT_ALL             = NO
+EXTRACT_PRIVATE         = NO
+
+# Self-explanatory members (constructors, trivial accessors, operators) need no doc-comment.
+WARN_IF_UNDOCUMENTED    = NO
+
+GENERATE_HTML       = YES
+GENERATE_LATEX      = NO
+
+# Navigation tree and search box in the HTML output.
+GENERATE_TREEVIEW   = YES
+DISABLE_INDEX       = NO
+
+# Use README.md as the main page.
+USE_MDFILE_AS_MAINPAGE = README.md
+INPUT                  += README.md
+
+HAVE_DOT            = NO
+
+# Sort members in the order they are declared in the source.
+SORT_MEMBER_DOCS    = NO
