@@ -6,7 +6,7 @@
 
 namespace Geometry
 {
-	/// An infinite line in 3D space defined by a point on the line and a unit direction.
+	/// An infinite line in 3D space defined by a point on the line and a direction vector.
 	/// Throws std::invalid_argument if the direction vector is zero or non-finite.
 	class Line
 	{
@@ -18,7 +18,7 @@ namespace Geometry
 			Line(Point const& p1, Point const& p2);
 
 			[[nodiscard]] Point const& origin() const noexcept; ///< A point on the line.
-			[[nodiscard]] Vector const& direction() const noexcept; ///< Unit direction vector.
+			[[nodiscard]] Vector const& direction() const noexcept; ///< Direction vector.
 
 			/// Returns the point at parameter \p t: origin + t * direction.
 			[[nodiscard]] Point at(double t) const noexcept;

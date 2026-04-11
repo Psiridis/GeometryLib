@@ -6,7 +6,7 @@
 
 namespace Geometry
 {
-	/// A semi-infinite ray starting at an origin and extending in a unit direction.
+	/// A semi-infinite ray starting at an origin and extending in a direction vector.
 	/// Throws std::invalid_argument if the direction vector is zero or non-finite.
 	class Ray
 	{
@@ -17,11 +17,11 @@ namespace Geometry
 			/// Constructs a ray from \p origin towards \p point_on_ray.
 			Ray(Point const& origin, Point const& point_on_ray);
 
-			[[nodiscard]] Point const& origin() const noexcept; ///< Ray origin.
-			[[nodiscard]] Vector const& direction() const noexcept; ///< Unit direction vector.
+			[[nodiscard]] Point const& origin() const noexcept;			///< Ray origin.
+			[[nodiscard]] Vector const& direction() const noexcept; ///< Direction vector.
 
 			/// Returns the point at parameter \p t ≥ 0: origin + t * direction.
-			/// Throws std::invalid_argument if t is negative.
+			/// Throws std::domain_error if t is negative.
 			[[nodiscard]] Point at(double t) const;
 
 		private:
