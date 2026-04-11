@@ -111,4 +111,58 @@ namespace Geometry
 		return line1.at(s);
 	}
 
+	// ── Ray ∩ Triangle (Möller–Trumbore) ──────────────────────────────────────
+	//
+	// Reference:
+	//   Möller, T. & Trumbore, B. (1997). "Fast, Minimum Storage Ray/Triangle
+	//   Intersection." Journal of Graphics Tools, 2(1), 21–28.
+	//   https://doi.org/10.1080/10867651.1997.10487468
+	//
+	// Ray:      P(t) = O + t D,    t ≥ 0
+	// Triangle: vertices V0, V1, V2;  edges E1 = V1−V0, E2 = V2−V0
+	//
+	// Derivation (solve O + tD = V0 + u E1 + v E2):
+	//   h  = D × E2
+	//   a  = E1 · h            ← denominator; ≈ 0 → ray parallel to triangle
+	//   f  = 1 / a
+	//   s  = O − V0
+	//   u  = f (s · h)         ← 1st barycentric coord; must be in [0, 1]
+	//   q  = s × E1
+	//   v  = f (D · q)         ← 2nd barycentric coord; must be in [0, 1−u]
+	//   t  = f (E2 · q)        ← ray parameter; must be ≥ 0
+	//
+	// Both front-face and back-face hits are reported (two-sided test).
+	//
+	std::optional<Point> intersect(Ray const& ray, Triangle const& triangle)
+	{
+		Vector const e1 = triangle.p1() - triangle.p0();
+		Vector const e2 = triangle.p2() - triangle.p0();
+
+		Vector const h = ray.direction().cross(e2);
+		double const a = e1.dot(h);
+
+		// Parallel test: |a| < eps * |E1| * |D| (scale-independent)
+		if (a * a < utils::k_rel_eps * utils::k_rel_eps * e1.length_squared() *
+				ray.direction().length_squared())
+			return std::nullopt;
+
+		double const f = 1.0 / a;
+
+		Vector const s = ray.origin() - triangle.p0();
+		double const u = f * s.dot(h);
+		if (u < 0.0 || u > 1.0)
+			return std::nullopt;
+
+		Vector const q = s.cross(e1);
+		double const v = f * ray.direction().dot(q);
+		if (v < 0.0 || u + v > 1.0)
+			return std::nullopt;
+
+		double const t = f * e2.dot(q);
+		if (t < 0.0)
+			return std::nullopt;
+
+		return ray.origin() + t * ray.direction();
+	}
+
 } // namespace Geometry

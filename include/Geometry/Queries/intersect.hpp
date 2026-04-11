@@ -5,6 +5,7 @@
 #include "Geometry/Primitives/plane.hpp"
 #include "Geometry/Primitives/point.hpp"
 #include "Geometry/Primitives/ray.hpp"
+#include "Geometry/Shapes/triangle.hpp"
 
 #include <optional>
 
@@ -25,6 +26,16 @@ namespace Geometry
 	/// Returns the intersection point of two lines, or std::nullopt if the
 	/// lines are parallel or skew (non-coplanar).
 	[[nodiscard]] std::optional<Point> intersect(Line const& line1, Line const& line2);
+
+	/// Returns the intersection point of a ray and a triangle using the
+	/// Möller–Trumbore algorithm, or std::nullopt if:
+	///   - the ray is parallel to the triangle plane, or
+	///   - the intersection point lies outside the triangle, or
+	///   - the intersection is behind the ray origin (t < 0).
+	/// Back-face hits (ray approaching from the side opposite the triangle
+	/// normal) are included; pass the result through Triangle::contains() or
+	/// check the normal if one-sided behaviour is required.
+	[[nodiscard]] std::optional<Point> intersect(Ray const& ray, Triangle const& triangle);
 
 } // namespace Geometry
 

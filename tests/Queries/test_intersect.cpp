@@ -4,6 +4,7 @@
 #include "Geometry/Primitives/ray.hpp"
 #include "Geometry/Primitives/vector.hpp"
 #include "Geometry/Queries/intersect.hpp"
+#include "Geometry/Shapes/triangle.hpp"
 
 #include <gtest/gtest.h>
 
@@ -411,4 +412,104 @@ TEST(IntersectLineLineAdversarial, ScaledDirectionsGiveSameClassification)
 	auto result = intersect(line1, line2);
 
 	EXPECT_FALSE(result.has_value()); // still skew
+}
+
+// ── intersect(Ray, Triangle) ──────────────────────────────────────────────────
+//
+// Helper: unit triangle in the z = 0 plane, vertices at (0,0,0),(1,0,0),(0,1,0)
+
+static Triangle xy_triangle()
+{
+	return Triangle(Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(0.0, 1.0, 0.0));
+}
+
+TEST(IntersectRayTriangle, RayHitsCentroid)
+{
+	// Ray from above straight down onto the centroid (1/3, 1/3, 0)
+	Ray ray(Point(1.0 / 3.0, 1.0 / 3.0, 1.0), Vector(0.0, 0.0, -1.0));
+	auto result = intersect(ray, xy_triangle());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 1.0 / 3.0, 1.0 / 3.0, 0.0);
+}
+
+TEST(IntersectRayTriangle, RayHitsVertex)
+{
+	// Ray aimed straight at p0 = (0,0,0)
+	Ray ray(Point(0.0, 0.0, 1.0), Vector(0.0, 0.0, -1.0));
+	auto result = intersect(ray, xy_triangle());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.0, 0.0);
+}
+
+TEST(IntersectRayTriangle, RayHitsEdgeMidpoint)
+{
+	// Midpoint of edge p0→p1 is (0.5, 0, 0)
+	Ray ray(Point(0.5, 0.0, 1.0), Vector(0.0, 0.0, -1.0));
+	auto result = intersect(ray, xy_triangle());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.5, 0.0, 0.0);
+}
+
+TEST(IntersectRayTriangle, RayMissesOutsideTriangle)
+{
+	// (1,1,z) is outside the unit triangle (u+v > 1)
+	Ray ray(Point(1.0, 1.0, 1.0), Vector(0.0, 0.0, -1.0));
+	auto result = intersect(ray, xy_triangle());
+	EXPECT_FALSE(result.has_value());
+}
+
+TEST(IntersectRayTriangle, RayParallelToTrianglePlane)
+{
+	// Ray travels in the z = 1 plane — parallel to z = 0 triangle
+	Ray ray(Point(0.0, 0.0, 1.0), Vector(1.0, 0.0, 0.0));
+	auto result = intersect(ray, xy_triangle());
+	EXPECT_FALSE(result.has_value());
+}
+
+TEST(IntersectRayTriangle, RayPointingAway)
+{
+	// Ray origin is above the triangle but direction points upward — misses
+	Ray ray(Point(0.25, 0.25, 1.0), Vector(0.0, 0.0, 1.0));
+	auto result = intersect(ray, xy_triangle());
+	EXPECT_FALSE(result.has_value());
+}
+
+TEST(IntersectRayTriangle, RayFromBelowBackFaceHit)
+{
+	// Ray approaching from below (back face) — must still return a hit
+	Ray ray(Point(1.0 / 3.0, 1.0 / 3.0, -1.0), Vector(0.0, 0.0, 1.0));
+	auto result = intersect(ray, xy_triangle());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 1.0 / 3.0, 1.0 / 3.0, 0.0);
+}
+
+TEST(IntersectRayTriangle, ObliqueHit)
+{
+	// Ray from (0,0,1) along (1,0,-2): hits at t=0.5 → (0.5, 0, 0)
+	Ray ray(Point(0.0, 0.0, 1.0), Vector(1.0, 0.0, -2.0));
+	auto result = intersect(ray, xy_triangle());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.5, 0.0, 0.0);
+}
+
+TEST(IntersectRayTriangle, OffOriginTriangle)
+{
+	// Triangle far from origin; ray aimed at its centroid
+	Triangle t(Point(10.0, 10.0, 5.0), Point(12.0, 10.0, 5.0), Point(10.0, 12.0, 5.0));
+	Point centroid(11.0 + 1.0 / 3.0, 10.0 + 2.0 / 3.0, 5.0);
+	// Adjust: centroid = ((10+12+10)/3, (10+10+12)/3, 5) = (32/3, 32/3, 5)
+	Point c((10.0 + 12.0 + 10.0) / 3.0, (10.0 + 10.0 + 12.0) / 3.0, 5.0);
+	Ray ray(c + Vector(0.0, 0.0, 3.0), Vector(0.0, 0.0, -1.0));
+	auto result = intersect(ray, t);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, c.x(), c.y(), 5.0);
+}
+
+TEST(IntersectRayTriangle, ScaledDirectionGivesSameHit)
+{
+	// Scaling the ray direction must not change the hit point
+	Ray ray(Point(1.0 / 3.0, 1.0 / 3.0, 2.0), Vector(0.0, 0.0, -1.0e4));
+	auto result = intersect(ray, xy_triangle());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 1.0 / 3.0, 1.0 / 3.0, 0.0);
 }
