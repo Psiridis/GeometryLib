@@ -6,6 +6,7 @@
 #include "Geometry/Primitives/plane.hpp"
 #include "Geometry/Primitives/point.hpp"
 #include "Geometry/Primitives/ray.hpp"
+#include "Geometry/Shapes/segment.hpp"
 #include "Geometry/Shapes/triangle.hpp"
 
 #include <optional>
@@ -48,6 +49,22 @@ namespace Geometry
 	/// A ray that grazes an edge or corner (t_entry == t_exit) is counted as a
 	/// hit — the returned point lies exactly on the boundary.
 	[[nodiscard]] std::optional<Point> intersect(Ray const& ray, BoundingBox const& box);
+
+	/// Returns the intersection point of a segment and a plane, or std::nullopt
+	/// if the segment is parallel to the plane or the intersection lies outside
+	/// the segment (t outside [0, 1]).
+	[[nodiscard]] std::optional<Point> intersect(Segment const& segment, Plane const& plane);
+
+	/// Returns the intersection point of a segment and a triangle, or std::nullopt
+	/// if the segment misses the triangle or does not cross its plane within [0, 1].
+	[[nodiscard]] std::optional<Point>
+	intersect(Segment const& segment, Triangle const& triangle);
+
+	/// Returns the entry point of a segment into an axis-aligned bounding box,
+	/// or std::nullopt if the segment misses the box entirely.
+	/// Uses the slab method with t clamped to [0, 1].
+	[[nodiscard]] std::optional<Point>
+	intersect(Segment const& segment, BoundingBox const& box);
 
 } // namespace Geometry
 

@@ -6,6 +6,7 @@
 #include "Geometry/Primitives/point.hpp"
 #include "Geometry/Primitives/ray.hpp"
 #include "Geometry/Primitives/vector.hpp"
+#include "Geometry/Shapes/segment.hpp"
 
 #include <optional>
 
@@ -41,6 +42,11 @@ namespace Geometry
 	/// Returns std::nullopt when the line is perpendicular to the plane
 	/// (direction is parallel to the normal), collapsing to a single point.
 	[[nodiscard]] std::optional<Line> project(Line const& line, Plane const& plane);
+
+	/// Returns the closest point on the segment to the given point.
+	/// Same as project(Point, Line) but t is clamped to [0, 1] so the result
+	/// always lies on the segment.
+	[[nodiscard]] Point project(Point const& point, Segment const& segment) noexcept;
 
 } // namespace Geometry
 

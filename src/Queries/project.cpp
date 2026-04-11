@@ -92,4 +92,20 @@ namespace Geometry
 		return Line(origin_proj, d_proj);
 	}
 
+	// ── project(Point, Segment) ───────────────────────────────────────────────
+	//
+	// Project P onto the infinite line through the segment, then clamp t to [0, 1]:
+	//
+	//   d  = end − start
+	//   t  = clamp((P − start) · d / |d|², 0, 1)
+	//   P' = start + t * d
+	//
+	Point project(Point const& point, Segment const& segment) noexcept
+	{
+		Vector const d = segment.end() - segment.start();
+		double const t =
+		std::clamp((point - segment.start()).dot(d) / d.length_squared(), 0.0, 1.0);
+		return segment.start() + t * d;
+	}
+
 } // namespace Geometry

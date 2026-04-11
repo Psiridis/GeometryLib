@@ -182,7 +182,22 @@ Mark items with `[x]` as they are completed.
 ### Extended intersections (add to `Queries/intersect.hpp` / `Queries/intersect.cpp`)
 - [x] `intersect(Ray, Triangle)`     → `std::optional<Point>` — Möller–Trumbore algorithm
 - [x] `intersect(Ray, BoundingBox)`  → `std::optional<Point>` — slab method
-- [ ] `intersect(Segment, Plane)`    → `std::optional<Point>`
+- [x] `intersect(Segment, Plane)`    → `std::optional<Point>`
+- [x] `intersect(Segment, Triangle)` → `std::optional<Point>` — clip to plane, then containment test
+- [x] `intersect(Segment, BoundingBox)` → `std::optional<Point>` — slab method clamped to [0, 1]
+
+### Extended parallel (add to `Queries/parallel.hpp` / `Queries/parallel.cpp`)
+- [x] `is_parallel(Ray, Ray)`        → `bool`
+- [x] `is_parallel(Ray, Plane)`      → `bool`
+
+### Extended distance (add to `Queries/distance.hpp` / `Queries/distance.cpp`)
+- [x] `distance(Point, Segment)`    → `double` — clamp projection to [0, 1]
+- [x] `distance(Point, Triangle)`   → `double` — closest point on triangle surface
+- [x] `distance(Point, BoundingBox)` → `double` — zero if inside; component-wise clamp otherwise
+- [x] `distance(Segment, Segment)`  → `double` — general closest-point pair
+
+### Extended project (add to `Queries/project.hpp` / `Queries/project.cpp`)
+- [x] `project(Point, Segment)`     → `Point` — closest point on segment (t clamped to [0, 1])
 
 ### CMake
 - [x] Add new source files to `cmake/GeometrySources.cmake`

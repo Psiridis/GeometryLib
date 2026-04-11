@@ -1,6 +1,7 @@
 #include "Geometry/Primitives/line.hpp"
 #include "Geometry/Primitives/plane.hpp"
 #include "Geometry/Primitives/point.hpp"
+#include "Geometry/Primitives/ray.hpp"
 #include "Geometry/Primitives/vector.hpp"
 #include "Geometry/Queries/parallel.hpp"
 
@@ -110,4 +111,93 @@ TEST(IsParallelPlane, ObliquePlanes)
 	Plane b(Point(0.0, 0.0, 0.0), Vector(0.0, 1.0, 1.0));
 
 	EXPECT_FALSE(is_parallel(a, b));
+}
+
+// ── is_parallel(Ray, Ray) ─────────────────────────────────────────────────────
+
+TEST(IsParallelRayRay, SameDirection)
+{
+	Ray a(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Ray b(Point(0.0, 5.0, 0.0), Vector(1.0, 0.0, 0.0));
+
+	EXPECT_TRUE(is_parallel(a, b));
+}
+
+TEST(IsParallelRayRay, AntiParallelDirection)
+{
+	Ray a(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Ray b(Point(0.0, 5.0, 0.0), Vector(-1.0, 0.0, 0.0));
+
+	EXPECT_TRUE(is_parallel(a, b));
+}
+
+TEST(IsParallelRayRay, ScaledDirection)
+{
+	Ray a(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Ray b(Point(0.0, 5.0, 0.0), Vector(100.0, 0.0, 0.0));
+
+	EXPECT_TRUE(is_parallel(a, b));
+}
+
+TEST(IsParallelRayRay, PerpendicularRays)
+{
+	Ray a(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Ray b(Point(0.0, 0.0, 0.0), Vector(0.0, 1.0, 0.0));
+
+	EXPECT_FALSE(is_parallel(a, b));
+}
+
+TEST(IsParallelRayRay, ObliqueRays)
+{
+	Ray a(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Ray b(Point(0.0, 0.0, 0.0), Vector(1.0, 1.0, 0.0));
+
+	EXPECT_FALSE(is_parallel(a, b));
+}
+
+// ── is_parallel(Ray, Plane) ───────────────────────────────────────────────────
+
+TEST(IsParallelRayPlane, RayAlongPlane)
+{
+	// z=0 plane; ray along x-axis lies inside the plane
+	Ray ray(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_TRUE(is_parallel(ray, plane));
+}
+
+TEST(IsParallelRayPlane, RayParallelOffsetFromPlane)
+{
+	// Ray parallel to z=0 but at y=5
+	Ray ray(Point(0.0, 5.0, 3.0), Vector(1.0, 0.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_TRUE(is_parallel(ray, plane));
+}
+
+TEST(IsParallelRayPlane, RayPerpendicularToPlane)
+{
+	// z=0 plane; ray along z-axis aims directly through it
+	Ray ray(Point(0.0, 0.0, -1.0), Vector(0.0, 0.0, 1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(is_parallel(ray, plane));
+}
+
+TEST(IsParallelRayPlane, ObliqueRay)
+{
+	// Ray at 45° to z=0
+	Ray ray(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(is_parallel(ray, plane));
+}
+
+TEST(IsParallelRayPlane, Symmetry)
+{
+	// is_parallel(ray, plane): direction perpendicular to normal → parallel
+	Ray ray(Point(1.0, 2.0, 3.0), Vector(0.0, 1.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_TRUE(is_parallel(ray, plane));
 }

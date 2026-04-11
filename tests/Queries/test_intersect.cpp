@@ -5,6 +5,7 @@
 #include "Geometry/Primitives/ray.hpp"
 #include "Geometry/Primitives/vector.hpp"
 #include "Geometry/Queries/intersect.hpp"
+#include "Geometry/Shapes/segment.hpp"
 #include "Geometry/Shapes/triangle.hpp"
 
 #include <gtest/gtest.h>
@@ -629,4 +630,181 @@ TEST(IntersectRayAABB, ScaledDirectionGivesSameHit)
 	auto result = intersect(ray, unit_aabb());
 	ASSERT_TRUE(result.has_value());
 	ExpectPointEq(*result, 0.0, 0.5, 0.5);
+}
+
+// ── intersect(Segment, Plane) ────────────────────────────────────────────────
+
+TEST(IntersectSegmentPlane, SegmentBisectedByPlane)
+{
+	// Segment from (0,0,-1) to (0,0,1); z=0 plane bisects it at (0,0,0)
+	Segment seg(Point(0.0, 0.0, -1.0), Point(0.0, 0.0, 1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	auto result = intersect(seg, plane);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.0, 0.0);
+}
+
+TEST(IntersectSegmentPlane, SegmentEntirelyAbovePlane)
+{
+	// Both endpoints at z > 0 → no intersection
+	Segment seg(Point(0.0, 0.0, 1.0), Point(0.0, 0.0, 3.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(intersect(seg, plane).has_value());
+}
+
+TEST(IntersectSegmentPlane, SegmentEntirelyBelowPlane)
+{
+	Segment seg(Point(0.0, 0.0, -3.0), Point(0.0, 0.0, -1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(intersect(seg, plane).has_value());
+}
+
+TEST(IntersectSegmentPlane, StartPointOnPlane)
+{
+	// Start is exactly on z=0 (t=0) → hit at start
+	Segment seg(Point(1.0, 2.0, 0.0), Point(1.0, 2.0, 5.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	auto result = intersect(seg, plane);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 1.0, 2.0, 0.0);
+}
+
+TEST(IntersectSegmentPlane, EndPointOnPlane)
+{
+	// End is exactly on z=0 (t=1) → hit at end
+	Segment seg(Point(1.0, 2.0, -5.0), Point(1.0, 2.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	auto result = intersect(seg, plane);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 1.0, 2.0, 0.0);
+}
+
+TEST(IntersectSegmentPlane, SegmentParallelToPlane)
+{
+	// Segment lies in z=0 → parallel, no unique intersection
+	Segment seg(Point(0.0, 0.0, 0.0), Point(1.0, 1.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(intersect(seg, plane).has_value());
+}
+
+TEST(IntersectSegmentPlane, OffAxisHit)
+{
+	// Segment from (-1,-1,1) to (1,1,-1); midpoint (0,0,0) is on z=0
+	Segment seg(Point(-1.0, -1.0, 1.0), Point(1.0, 1.0, -1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	auto result = intersect(seg, plane);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.0, 0.0);
+}
+
+// ── intersect(Segment, Triangle) ──────────────────────────────────────────────
+
+static Triangle unit_triangle()
+{
+	// Triangle in z=0: (0,0,0),(1,0,0),(0,1,0)
+	return Triangle(Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(0.0, 1.0, 0.0));
+}
+
+TEST(IntersectSegmentTriangle, PiercesCenter)
+{
+	// Segment from (0.25,0.25,-1) to (0.25,0.25,1) → hits (0.25,0.25,0)
+	Segment seg(Point(0.25, 0.25, -1.0), Point(0.25, 0.25, 1.0));
+
+	auto result = intersect(seg, unit_triangle());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.25, 0.25, 0.0);
+}
+
+TEST(IntersectSegmentTriangle, MissesOutsideTriangle)
+{
+	// Segment pierces the supporting plane but outside the triangle (x+y > 1)
+	Segment seg(Point(0.8, 0.8, -1.0), Point(0.8, 0.8, 1.0));
+
+	EXPECT_FALSE(intersect(seg, unit_triangle()).has_value());
+}
+
+TEST(IntersectSegmentTriangle, SegmentTooShortToReachPlane)
+{
+	// Segment stays on the same side of z=0
+	Segment seg(Point(0.25, 0.25, 1.0), Point(0.25, 0.25, 3.0));
+
+	EXPECT_FALSE(intersect(seg, unit_triangle()).has_value());
+}
+
+TEST(IntersectSegmentTriangle, PiercesAtVertex)
+{
+	// Segment from (0,0,-1) to (0,0,1) → hits vertex (0,0,0)
+	Segment seg(Point(0.0, 0.0, -1.0), Point(0.0, 0.0, 1.0));
+
+	auto result = intersect(seg, unit_triangle());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.0, 0.0);
+}
+
+TEST(IntersectSegmentTriangle, ParallelSegment)
+{
+	// Segment in z=0 plane is parallel to the triangle plane → no hit
+	Segment seg(Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0));
+
+	EXPECT_FALSE(intersect(seg, unit_triangle()).has_value());
+}
+
+// ── intersect(Segment, BoundingBox) ─────────────────────────────────────────
+
+TEST(IntersectSegmentAABB, SegmentPiercesFace)
+{
+	// Segment from (-1,0.5,0.5) to (0.5,0.5,0.5) enters unit box at (0,0.5,0.5)
+	BoundingBox box(Point(0.0, 0.0, 0.0), Point(1.0, 1.0, 1.0));
+	Segment seg(Point(-1.0, 0.5, 0.5), Point(0.5, 0.5, 0.5));
+
+	auto result = intersect(seg, box);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.5, 0.5);
+}
+
+TEST(IntersectSegmentAABB, SegmentEntirelyInside)
+{
+	// Start inside the box (t_entry=0) → returns start
+	BoundingBox box(Point(0.0, 0.0, 0.0), Point(2.0, 2.0, 2.0));
+	Segment seg(Point(0.5, 0.5, 0.5), Point(1.5, 1.5, 1.5));
+
+	auto result = intersect(seg, box);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.5, 0.5, 0.5);
+}
+
+TEST(IntersectSegmentAABB, SegmentMissesBox)
+{
+	// Segment passes beside the box in y
+	BoundingBox box(Point(0.0, 0.0, 0.0), Point(1.0, 1.0, 1.0));
+	Segment seg(Point(-1.0, 2.0, 0.5), Point(2.0, 2.0, 0.5));
+
+	EXPECT_FALSE(intersect(seg, box).has_value());
+}
+
+TEST(IntersectSegmentAABB, SegmentTooShort)
+{
+	// Segment starts before the box but ends before reaching it
+	BoundingBox box(Point(3.0, 0.0, 0.0), Point(4.0, 1.0, 1.0));
+	Segment seg(Point(0.0, 0.5, 0.5), Point(1.0, 0.5, 0.5));
+
+	EXPECT_FALSE(intersect(seg, box).has_value());
+}
+
+TEST(IntersectSegmentAABB, DiagonalHit)
+{
+	// Diagonal segment from (-1,-1,-1) to (1,1,1) enters box [0,1]³ at (0,0,0)
+	BoundingBox box(Point(0.0, 0.0, 0.0), Point(1.0, 1.0, 1.0));
+	Segment seg(Point(-1.0, -1.0, -1.0), Point(1.0, 1.0, 1.0));
+
+	auto result = intersect(seg, box);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.0, 0.0);
 }

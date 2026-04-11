@@ -248,4 +248,99 @@ namespace Geometry
 		return ray.origin() + t_entry * ray.direction();
 	}
 
+	// ── Segment ∩ Plane ────────────────────────────────────────────────────────
+	//
+	// Parameterise the segment as P(t) = start + t*(end − start), t ∈ [0, 1].
+	// Intersect with the plane exactly as Ray ∩ Plane, but reject if t ∉ [0, 1].
+	//
+	std::optional<Point> intersect(Segment const& segment, Plane const& plane)
+	{
+		Vector const d		 = segment.end() - segment.start();
+		double const denom = plane.normal().dot(d);
+
+		// Parallel test (scale-independent)
+		if (denom * denom < utils::k_rel_eps * utils::k_rel_eps * d.length_squared())
+			return std::nullopt;
+
+		double const t = -plane.signed_distance(segment.start()) / denom;
+		if (t < 0.0 || t > 1.0)
+			return std::nullopt;
+
+		return segment.start() + t * d;
+	}
+
+	// ── Segment ∩ Triangle ────────────────────────────────────────────────────
+	//
+	// Clip the segment to the triangle plane to find the crossing parameter t,
+	// then verify the resulting point lies inside the triangle.
+	//
+	std::optional<Point> intersect(Segment const& segment, Triangle const& triangle)
+	{
+		auto hit = intersect(segment, triangle.plane());
+		if (!hit)
+			return std::nullopt;
+
+		if (!triangle.contains(*hit))
+			return std::nullopt;
+
+		return hit;
+	}
+
+	// ── Segment ∩ BoundingBox (slab method, t ∈ [0, 1]) ──────────────────────
+	//
+	// Identical to Ray ∩ BoundingBox but the segment has a finite length.
+	// The slab intervals are computed in terms of the unnormalised direction
+	// d = end − start; t=0 is the start, t=1 is the end.
+	// A hit requires t_entry ≤ t_exit and both within [0, 1].
+	//
+	std::optional<Point> intersect(Segment const& segment, BoundingBox const& box)
+	{
+		Vector const d = segment.end() - segment.start();
+		auto const& o	 = segment.start();
+
+		double t_entry = 0.0;
+		double t_exit	 = 1.0;
+
+		// X slab
+		{
+			double const inv = 1.0 / d.dx();
+			double t1				 = (box.min().x() - o.x()) * inv;
+			double t2				 = (box.max().x() - o.x()) * inv;
+			if (t1 > t2)
+				std::swap(t1, t2);
+			t_entry = std::max(t_entry, t1);
+			t_exit	= std::min(t_exit, t2);
+		}
+		if (t_entry > t_exit)
+			return std::nullopt;
+
+		// Y slab
+		{
+			double const inv = 1.0 / d.dy();
+			double t1				 = (box.min().y() - o.y()) * inv;
+			double t2				 = (box.max().y() - o.y()) * inv;
+			if (t1 > t2)
+				std::swap(t1, t2);
+			t_entry = std::max(t_entry, t1);
+			t_exit	= std::min(t_exit, t2);
+		}
+		if (t_entry > t_exit)
+			return std::nullopt;
+
+		// Z slab
+		{
+			double const inv = 1.0 / d.dz();
+			double t1				 = (box.min().z() - o.z()) * inv;
+			double t2				 = (box.max().z() - o.z()) * inv;
+			if (t1 > t2)
+				std::swap(t1, t2);
+			t_entry = std::max(t_entry, t1);
+			t_exit	= std::min(t_exit, t2);
+		}
+		if (t_entry > t_exit)
+			return std::nullopt;
+
+		return segment.start() + t_entry * d;
+	}
+
 } // namespace Geometry

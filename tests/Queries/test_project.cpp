@@ -4,6 +4,7 @@
 #include "Geometry/Primitives/ray.hpp"
 #include "Geometry/Primitives/vector.hpp"
 #include "Geometry/Queries/project.hpp"
+#include "Geometry/Shapes/segment.hpp"
 
 #include <gtest/gtest.h>
 
@@ -418,4 +419,61 @@ TEST(ProjectVectorPlane, NonAxisAlignedPlane)
 	EXPECT_NEAR(result.dy(), -0.5, kTol);
 	EXPECT_NEAR(result.dz(), 0.0, kTol);
 	EXPECT_NEAR(result.dot(plane.normal()), 0.0, kTol);
+}
+
+// ── project(Point, Segment) ──────────────────────────────────────────────────
+
+TEST(ProjectPointSegment, PointOnSegment)
+{
+	// Point already on the segment projects to itself
+	Segment seg(Point(0.0, 0.0, 0.0), Point(4.0, 0.0, 0.0));
+	Point p(2.0, 0.0, 0.0);
+
+	ExpectPointEq(project(p, seg), 2.0, 0.0, 0.0);
+}
+
+TEST(ProjectPointSegment, PointPerpendicularToMidpoint)
+{
+	// Foot of perpendicular from (2, 3, 0) onto the x-axis segment [0,4]
+	Segment seg(Point(0.0, 0.0, 0.0), Point(4.0, 0.0, 0.0));
+	Point p(2.0, 3.0, 0.0);
+
+	ExpectPointEq(project(p, seg), 2.0, 0.0, 0.0);
+}
+
+TEST(ProjectPointSegment, PointBeyondEnd)
+{
+	// Project clamps to the end point when t > 1
+	Segment seg(Point(0.0, 0.0, 0.0), Point(4.0, 0.0, 0.0));
+	Point p(10.0, 2.0, 0.0);
+
+	ExpectPointEq(project(p, seg), 4.0, 0.0, 0.0);
+}
+
+TEST(ProjectPointSegment, PointBeforeStart)
+{
+	// Project clamps to the start point when t < 0
+	Segment seg(Point(0.0, 0.0, 0.0), Point(4.0, 0.0, 0.0));
+	Point p(-5.0, 2.0, 0.0);
+
+	ExpectPointEq(project(p, seg), 0.0, 0.0, 0.0);
+}
+
+TEST(ProjectPointSegment, PointAtStartIsStart)
+{
+	Segment seg(Point(1.0, 2.0, 3.0), Point(5.0, 2.0, 3.0));
+	Point p(1.0, 2.0, 3.0);
+
+	ExpectPointEq(project(p, seg), 1.0, 2.0, 3.0);
+}
+
+TEST(ProjectPointSegment, DiagonalSegment)
+{
+	// Segment from (0,0,0) to (1,1,0); project (1,0,0)
+	// d=(1,1,0), w=(1,0,0), t = (1·1+0·1+0) / 2 = 0.5
+	// foot = (0.5, 0.5, 0)
+	Segment seg(Point(0.0, 0.0, 0.0), Point(1.0, 1.0, 0.0));
+	Point p(1.0, 0.0, 0.0);
+
+	ExpectPointEq(project(p, seg), 0.5, 0.5, 0.0);
 }

@@ -22,4 +22,21 @@ namespace Geometry
 		return cross.length_squared() < utils::k_abs_eps * utils::k_abs_eps;
 	}
 
+	bool is_parallel(Ray const& a, Ray const& b) noexcept
+	{
+		Vector cross = a.direction().cross(b.direction());
+		return cross.length_squared() < utils::k_abs_eps * utils::k_abs_eps *
+		a.direction().length_squared() * b.direction().length_squared();
+	}
+
+	bool is_parallel(Ray const& ray, Plane const& plane) noexcept
+	{
+		// The ray is parallel to the plane when its direction is perpendicular
+		// to the plane normal (dot product ≈ 0).
+		// Scale-independent test: denom² < k_rel_eps² · |d|²
+		double const denom = plane.normal().dot(ray.direction());
+		return denom * denom <
+		utils::k_rel_eps * utils::k_rel_eps * ray.direction().length_squared();
+	}
+
 } // namespace Geometry
