@@ -4,6 +4,7 @@
 #include "Geometry/Primitives/plane.hpp"
 #include "Geometry/Primitives/point.hpp"
 #include "Geometry/Primitives/vector.hpp"
+#include "Geometry/tolerance.hpp"
 
 namespace Geometry
 {
@@ -38,7 +39,7 @@ namespace Geometry
 			/// The point must be coplanar with the circle (distance to plane ≈ 0);
 			/// a non-coplanar point always returns false.
 			/// For non-coplanar points use project(point, plane()) then contains().
-			[[nodiscard]] bool contains(Point const& p, double abs_eps = 1e-9) const noexcept;
+			[[nodiscard]] bool contains(Point const& p, double tol = tolerance::k_rel_eps) const noexcept;
 
 			[[nodiscard]] bool operator==(Circle const& other) const noexcept;
 			[[nodiscard]] bool operator!=(Circle const& other) const noexcept;

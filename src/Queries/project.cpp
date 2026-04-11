@@ -1,7 +1,6 @@
 #include "Geometry/Queries/project.hpp"
 
 #include <algorithm>
-#include <optional>
 
 #include "utils/numerical_utils.hpp"
 

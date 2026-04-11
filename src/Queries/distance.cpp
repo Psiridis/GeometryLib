@@ -1,6 +1,5 @@
 #include "Geometry/Queries/distance.hpp"
 
-#include "Geometry/Primitives/vector.hpp"
 #include "Geometry/Queries/parallel.hpp"
 #include "Geometry/Queries/project.hpp"
 

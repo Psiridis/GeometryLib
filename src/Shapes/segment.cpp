@@ -67,11 +67,11 @@ namespace Geometry
 	// This avoids cross-product or parameterisation logic and handles
 	// degenerate near-zero-length segments via the constructor invariant.
 	//
-	bool Segment::contains(Point const& p, double abs_eps) const noexcept
+	bool Segment::contains(Point const& p, double tol) const noexcept
 	{
 		double const len = length();
 		double const sum = m_start.distance(p) + p.distance(m_end);
-		return (sum - len) <= abs_eps;
+		return (sum - len) <= tol;
 	}
 
 	bool Segment::operator==(Segment const& other) const noexcept

@@ -1,12 +1,15 @@
 #ifndef NUMERICAL_UTILS_HPP
 #define NUMERICAL_UTILS_HPP
 
+#include "Geometry/tolerance.hpp"
+
 namespace Geometry::utils
 {
-	/// Default absolute and relative tolerances used throughout the library.
-	/// All threshold constants in other modules must be derived from these.
-	inline constexpr double k_abs_eps = 1e-12;
-	inline constexpr double k_rel_eps = 1e-9;
+	/// Implementation-private aliases for the public tolerance constants.
+	/// All threshold comparisons in .cpp files must use these names;
+	/// change the values by editing include/Geometry/tolerance.hpp only.
+	inline constexpr double k_abs_eps = Geometry::tolerance::k_abs_eps;
+	inline constexpr double k_rel_eps = Geometry::tolerance::k_rel_eps;
 
 	[[nodiscard]] bool
 	almost_equal(double a, double b, double abs_eps = k_abs_eps, double rel_eps = k_rel_eps);

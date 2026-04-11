@@ -3,6 +3,7 @@
 
 #include "Geometry/Primitives/point.hpp"
 #include "Geometry/Primitives/vector.hpp"
+#include "Geometry/tolerance.hpp"
 
 namespace Geometry
 {
@@ -29,8 +30,9 @@ namespace Geometry
 			[[nodiscard]] double distance(Point const& p) const noexcept;
 
 			/// Returns true if \p p lies on the plane within the given tolerances.
-			[[nodiscard]] bool
-			contains(Point const& p, double abs_eps = 1e-12, double rel_eps = 1e-9) const noexcept;
+			[[nodiscard]] bool contains(Point const& p,
+																	double abs_eps = tolerance::k_abs_eps,
+																	double rel_eps = tolerance::k_rel_eps) const noexcept;
 
 		private:
 			Point m_point{};

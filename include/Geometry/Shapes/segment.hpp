@@ -3,6 +3,7 @@
 
 #include "Geometry/Primitives/point.hpp"
 #include "Geometry/Primitives/vector.hpp"
+#include "Geometry/tolerance.hpp"
 
 namespace Geometry
 {
@@ -35,7 +36,7 @@ namespace Geometry
 			/// Returns true if the point lies on the segment within tolerance.
 			/// Tests that distance(P, segment) ≈ 0 by checking that the sum of
 			/// distances from P to each endpoint equals the segment length.
-			[[nodiscard]] bool contains(Point const& p, double abs_eps = 1e-9) const noexcept;
+			[[nodiscard]] bool contains(Point const& p, double tol = tolerance::k_rel_eps) const noexcept;
 
 			[[nodiscard]] bool operator==(Segment const& other) const noexcept;
 			[[nodiscard]] bool operator!=(Segment const& other) const noexcept;

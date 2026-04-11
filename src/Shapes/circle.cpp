@@ -58,23 +58,23 @@ namespace Geometry
 	// ── contains(Point) ───────────────────────────────────────────────────────
 	//
 	// A point P lies in the disc if and only if:
-	//   1. |signed_distance(P, plane)| ≤ abs_eps   (P is coplanar)
-	//   2. |P − center|² ≤ radius²                 (P is within the radius)
+	//   1. |signed_distance(P, plane)| ≤ tol   (P is coplanar)
+	//   2. |P − center|² ≤ radius²              (P is within the radius)
 	//
-	// Condition 1 uses the same absolute tolerance the caller supplies so that
-	// points at the numerical boundary of the plane are treated consistently.
+	// Condition 1 uses the supplied tolerance so that points at the numerical
+	// boundary of the plane are treated consistently.
 	// Condition 2 avoids a square root by comparing squared quantities.
 	//
-	bool Circle::contains(Point const& p, double abs_eps) const noexcept
+	bool Circle::contains(Point const& p, double tol) const noexcept
 	{
 		// Check coplanarity
 		double const signed_dist = (p - m_center).dot(m_normal);
-		if (std::abs(signed_dist) > abs_eps)
+		if (std::abs(signed_dist) > tol)
 			return false;
 
 		// Check radial distance (squared, no sqrt needed)
 		double const dist2 = m_center.distance_squared(p);
-		return dist2 <= (m_radius + abs_eps) * (m_radius + abs_eps);
+		return dist2 <= (m_radius + tol) * (m_radius + tol);
 	}
 
 	bool Circle::operator==(Circle const& other) const noexcept

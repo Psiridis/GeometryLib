@@ -83,10 +83,13 @@ namespace Geometry
 		Vector const e20 = m_p0 - m_p2;
 
 		// Cross products of each edge with (P − edge start)
-		// A positive dot with the triangle normal means P is on the inside
-		bool const inside0 = e01.cross(p - m_p0).dot(m_normal) >= -utils::k_abs_eps;
-		bool const inside1 = e12.cross(p - m_p1).dot(m_normal) >= -utils::k_abs_eps;
-		bool const inside2 = e20.cross(p - m_p2).dot(m_normal) >= -utils::k_abs_eps;
+		// A positive dot with the triangle normal means P is on the inside.
+		// The threshold scales with 2·area so that the tolerance is proportional
+		// to the triangle's characteristic size rather than being an absolute value.
+		double const threshold = -utils::k_rel_eps * 2.0 * m_area;
+		bool const inside0		 = e01.cross(p - m_p0).dot(m_normal) >= threshold;
+		bool const inside1		 = e12.cross(p - m_p1).dot(m_normal) >= threshold;
+		bool const inside2		 = e20.cross(p - m_p2).dot(m_normal) >= threshold;
 
 		return inside0 && inside1 && inside2;
 	}

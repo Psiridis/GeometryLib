@@ -40,14 +40,11 @@ namespace Geometry
 	//
 	std::optional<Point> intersect(Line const& line, Plane const& plane)
 	{
-		double denom = plane.normal().dot(line.direction());
-
-		// Scale-independent: sin²(angle) = (n·d)² / |d|² < k_rel_eps²
-		// Since n is unit this reduces to: denom² < k_rel_eps² · |d|²
-		if (denom * denom < utils::k_rel_eps * utils::k_rel_eps * line.direction().length_squared())
+		if (is_parallel(line, plane))
 			return std::nullopt; // line is parallel to (or lies in) the plane
 
-		double t = -plane.signed_distance(line.origin()) / denom;
+		double const denom = plane.normal().dot(line.direction());
+		double const t		 = -plane.signed_distance(line.origin()) / denom;
 
 		return line.at(t);
 	}
@@ -255,14 +252,13 @@ namespace Geometry
 	//
 	std::optional<Point> intersect(Segment const& segment, Plane const& plane)
 	{
-		Vector const d		 = segment.end() - segment.start();
-		double const denom = plane.normal().dot(d);
-
-		// Parallel test (scale-independent)
-		if (denom * denom < utils::k_rel_eps * utils::k_rel_eps * d.length_squared())
+		if (is_parallel(segment, plane))
 			return std::nullopt;
 
-		double const t = -plane.signed_distance(segment.start()) / denom;
+		Vector const d		 = segment.end() - segment.start();
+		double const denom = plane.normal().dot(d);
+		double const t		 = -plane.signed_distance(segment.start()) / denom;
+
 		if (t < 0.0 || t > 1.0)
 			return std::nullopt;
 

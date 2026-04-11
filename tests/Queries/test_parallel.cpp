@@ -4,6 +4,7 @@
 #include "Geometry/Primitives/ray.hpp"
 #include "Geometry/Primitives/vector.hpp"
 #include "Geometry/Queries/parallel.hpp"
+#include "Geometry/Shapes/segment.hpp"
 
 #include <gtest/gtest.h>
 
@@ -200,4 +201,86 @@ TEST(IsParallelRayPlane, Symmetry)
 	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
 
 	EXPECT_TRUE(is_parallel(ray, plane));
+}
+
+// ── is_parallel(Line, Plane) ────────────────────────────────────────────────
+
+TEST(IsParallelLinePlane, LineAlongPlane)
+{
+	// z=0 plane; line along x-axis lies flat in the plane
+	Line line(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_TRUE(is_parallel(line, plane));
+}
+
+TEST(IsParallelLinePlane, LineParallelOffset)
+{
+	// Line at z=5 running along x — parallel to z=0 but not coplanar
+	Line line(Point(0.0, 0.0, 5.0), Vector(1.0, 0.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_TRUE(is_parallel(line, plane));
+}
+
+TEST(IsParallelLinePlane, LinePerpendicularToPlane)
+{
+	// z=0 plane; line along z-axis pierces through it
+	Line line(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(is_parallel(line, plane));
+}
+
+TEST(IsParallelLinePlane, ObliqueLineAndPlane)
+{
+	Line line(Point(0.0, 0.0, 0.0), Vector(1.0, 0.0, 1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(is_parallel(line, plane));
+}
+
+TEST(IsParallelLinePlane, ScaledDirection)
+{
+	// A scaled direction must give the same result
+	Line line(Point(0.0, 0.0, 0.0), Vector(100.0, 0.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_TRUE(is_parallel(line, plane));
+}
+
+// ── is_parallel(Segment, Plane) ─────────────────────────────────────────────
+
+TEST(IsParallelSegmentPlane, SegmentAlongPlane)
+{
+	// Segment in z=0 plane → parallel
+	Segment seg(Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_TRUE(is_parallel(seg, plane));
+}
+
+TEST(IsParallelSegmentPlane, SegmentParallelOffset)
+{
+	// Segment at z=3 running along y — parallel to z=0 plane
+	Segment seg(Point(0.0, 0.0, 3.0), Point(0.0, 1.0, 3.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_TRUE(is_parallel(seg, plane));
+}
+
+TEST(IsParallelSegmentPlane, SegmentCrossesPlane)
+{
+	Segment seg(Point(0.0, 0.0, -1.0), Point(0.0, 0.0, 1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(is_parallel(seg, plane));
+}
+
+TEST(IsParallelSegmentPlane, ObliqueSegment)
+{
+	Segment seg(Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 1.0));
+	Plane plane(Point(0.0, 0.0, 0.0), Vector(0.0, 0.0, 1.0));
+
+	EXPECT_FALSE(is_parallel(seg, plane));
 }
