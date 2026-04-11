@@ -2,7 +2,7 @@
 
 [![Docs](https://github.com/Psiridis/GeometryLib/actions/workflows/docs.yml/badge.svg)](https://psiridis.github.io/GeometryLib/)
 
-GeometryLib is a C++20 3D geometry library built with CMake. It provides analytic geometry primitives — points, vectors, lines, rays, and planes — a bounded shapes layer — segments, triangles, circles, and axis-aligned bounding boxes — and a spatial query layer covering intersection, parallelism, projection, and distance operations. The API is clean, well-tested, and uses scale-independent floating-point comparisons throughout.
+GeometryLib is a C++20 3D geometry library built with CMake. It provides analytic geometry primitives — points, vectors, lines, rays, and planes — a bounded shapes layer — segments, triangles, and circles — an axis-aligned bounding box for spatial acceleration, and a spatial query layer covering intersection, parallelism, projection, and distance operations. The API is clean, well-tested, and uses scale-independent floating-point comparisons throughout.
 
 The project exports an installable library target (`GeometryLib::Geometry`), ships CMake package configuration files for downstream `find_package` consumers, and uses GoogleTest for unit testing.
 
@@ -18,7 +18,8 @@ Geometry/
 │   └── GeometryTestSources.cmake   # lists all test source files
 ├── include/Geometry/
 │   ├── Primitives/   # point, vector, line, ray, plane
-│   ├── Shapes/       # segment, triangle, circle, bounding_box
+│   ├── Shapes/       # segment, triangle, circle
+│   ├── Bounds/       # bounding_box (AABB); later OBB, BVH
 │   └── Queries/      # intersect, parallel, project, distance
 ├── src/              # mirrors include/ layout; also contains utils/
 └── tests/            # mirrors include/ layout

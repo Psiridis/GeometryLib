@@ -11,4 +11,5 @@ set(GEOMETRY_TEST_SOURCES
   tests/Shapes/test_segment.cpp
   tests/Shapes/test_triangle.cpp
   tests/Shapes/test_circle.cpp
+  tests/Bounds/test_bounding_box.cpp
 )

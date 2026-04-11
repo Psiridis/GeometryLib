@@ -114,8 +114,9 @@ Mark items with `[x]` as they are completed.
     include/Geometry/
     ├── Primitives/    # point, vector, line, ray, plane
     ├── Queries/       # intersect, parallel, project, distance
-    ├── Shapes/        # segment, triangle, circle, bounding box  (Phase 2)
-    └── Transform/     # matrix, transform, coordinate frame      (Phase 3)
+    ├── Shapes/        # segment, triangle, circle             (Phase 2)
+    ├── Bounds/        # bounding box, (later: OBB, BVH)      (Phase 2)
+    └── Transform/     # matrix, transform, coordinate frame  (Phase 3)
     src/               # mirrors include/ layout
     tests/             # mirrors include/ layout
     ```
@@ -125,7 +126,7 @@ Mark items with `[x]` as they are completed.
 
 ## Phase 2 — Bounded Shapes (Layer 2 Geometry)
 
-**Goal:** Finite geometric shapes built on top of Layer 1 primitives.
+**Goal:** Finite geometric shapes and acceleration structures built on top of Layer 1 primitives.
 
 ### New class: `Segment`
 - [x] Header `include/Geometry/Shapes/segment.hpp`
@@ -165,18 +166,18 @@ Mark items with `[x]` as they are completed.
 - [x] `operator==`, `operator!=`
 - [x] Tests `tests/Shapes/test_circle.cpp`
 
-### New class: `BoundingBox` (AABB)
-- [ ] Header `include/Geometry/Shapes/bounding_box.hpp`
-- [ ] Source `src/Shapes/bounding_box.cpp`
-- [ ] `BoundingBox(Point min, Point max)`
-- [ ] Static factory `BoundingBox::from_points(std::span<Point const>)`
-- [ ] `min()`, `max()` accessors
-- [ ] `center()`, `diagonal()`, `volume()`, `surface_area()`
-- [ ] `contains(Point)`, `contains(BoundingBox)`
-- [ ] `intersects(BoundingBox)`
-- [ ] `expand(Point)`, `expand(BoundingBox)` — grow to include
-- [ ] `operator==`, `operator!=`
-- [ ] Tests `tests/Shapes/test_bounding_box.cpp`
+### New class: `BoundingBox` (AABB) — `Bounds/`
+- [x] Header `include/Geometry/Bounds/bounding_box.hpp`
+- [x] Source `src/Bounds/bounding_box.cpp`
+- [x] `BoundingBox(Point min, Point max)`
+- [x] Static factory `BoundingBox::from_points(std::span<Point const>)`
+- [x] `min()`, `max()` accessors
+- [x] `center()`, `diagonal()`, `volume()`, `surface_area()`
+- [x] `contains(Point)`, `contains(BoundingBox)`
+- [x] `intersects(BoundingBox)`
+- [x] `expand(Point)`, `expand(BoundingBox)` — grow to include
+- [x] `operator==`, `operator!=`
+- [x] Tests `tests/Bounds/test_bounding_box.cpp`
 
 ### Extended intersections (add to `Queries/intersect.hpp` / `Queries/intersect.cpp`)
 - [ ] `intersect(Ray, Triangle)`     → `std::optional<Point>` — Möller–Trumbore algorithm

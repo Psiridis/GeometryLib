@@ -12,4 +12,5 @@ set(GEOMETRY_SOURCES
   src/Shapes/segment.cpp
   src/Shapes/triangle.cpp
   src/Shapes/circle.cpp
+  src/Bounds/bounding_box.cpp
 )
