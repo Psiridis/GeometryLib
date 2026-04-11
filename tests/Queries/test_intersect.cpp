@@ -1,3 +1,4 @@
+#include "Geometry/Bounds/bounding_box.hpp"
 #include "Geometry/Primitives/line.hpp"
 #include "Geometry/Primitives/plane.hpp"
 #include "Geometry/Primitives/point.hpp"
@@ -512,4 +513,120 @@ TEST(IntersectRayTriangle, ScaledDirectionGivesSameHit)
 	auto result = intersect(ray, xy_triangle());
 	ASSERT_TRUE(result.has_value());
 	ExpectPointEq(*result, 1.0 / 3.0, 1.0 / 3.0, 0.0);
+}
+
+// ── intersect(Ray, BoundingBox) ───────────────────────────────────────────────
+//
+// Helper: unit AABB [0,1]³
+
+static BoundingBox unit_aabb()
+{
+	return BoundingBox(Point(0.0, 0.0, 0.0), Point(1.0, 1.0, 1.0));
+}
+
+TEST(IntersectRayAABB, RayHitsFrontFace)
+{
+	// Ray along +x, starts outside; enters at x=0, face centre (0, 0.5, 0.5)
+	Ray ray(Point(-1.0, 0.5, 0.5), Vector(1.0, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.5, 0.5);
+}
+
+TEST(IntersectRayAABB, RayHitsBackFace)
+{
+	// Ray along -x from the positive side; enters at x=1
+	Ray ray(Point(2.0, 0.5, 0.5), Vector(-1.0, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 1.0, 0.5, 0.5);
+}
+
+TEST(IntersectRayAABB, RayOriginInsideBox)
+{
+	// Origin inside: entry is clamped to t=0, returned point is the origin
+	Ray ray(Point(0.5, 0.5, 0.5), Vector(1.0, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.5, 0.5, 0.5);
+}
+
+TEST(IntersectRayAABB, RayOriginOnFace)
+{
+	// Origin exactly on the min-x face; direction points inward
+	Ray ray(Point(0.0, 0.5, 0.5), Vector(1.0, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.5, 0.5);
+}
+
+TEST(IntersectRayAABB, RayMissesBesideBox)
+{
+	// Ray parallel to x-axis but offset in y — misses entirely
+	Ray ray(Point(-1.0, 2.0, 0.5), Vector(1.0, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	EXPECT_FALSE(result.has_value());
+}
+
+TEST(IntersectRayAABB, RayPointingAway)
+{
+	// Ray origin outside, direction points away from the box
+	Ray ray(Point(-1.0, 0.5, 0.5), Vector(-1.0, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	EXPECT_FALSE(result.has_value());
+}
+
+TEST(IntersectRayAABB, RayGrazesEdge)
+{
+	// Ray aimed exactly at the edge between x=1 and y=1 faces
+	// Entry point is the corner (1,1,0.5) — touching counts as a hit
+	Ray ray(Point(2.0, 2.0, 0.5), Vector(-1.0, -1.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 1.0, 1.0, 0.5);
+}
+
+TEST(IntersectRayAABB, RayParallelToFaceInsideSlab)
+{
+	// Ray at y=0.5, z=0.5, travels along x — inside y and z slabs, hits box
+	Ray ray(Point(-2.0, 0.5, 0.5), Vector(1.0, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.5, 0.5);
+}
+
+TEST(IntersectRayAABB, RayParallelToFaceOutsideSlab)
+{
+	// Ray at y=2.0 — outside the y slab, parallel → miss
+	Ray ray(Point(-2.0, 2.0, 0.5), Vector(1.0, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	EXPECT_FALSE(result.has_value());
+}
+
+TEST(IntersectRayAABB, DiagonalHit)
+{
+	// Ray from (-1,-1,-1) along (1,1,1) — enters at (0,0,0)
+	Ray ray(Point(-1.0, -1.0, -1.0), Vector(1.0, 1.0, 1.0));
+	auto result = intersect(ray, unit_aabb());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.0, 0.0);
+}
+
+TEST(IntersectRayAABB, OffOriginBox)
+{
+	// Box at [5,7]³; ray aimed at centre from outside
+	BoundingBox box(Point(5.0, 5.0, 5.0), Point(7.0, 7.0, 7.0));
+	Ray ray(Point(3.0, 6.0, 6.0), Vector(1.0, 0.0, 0.0));
+	auto result = intersect(ray, box);
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 5.0, 6.0, 6.0);
+}
+
+TEST(IntersectRayAABB, ScaledDirectionGivesSameHit)
+{
+	// Scaling the direction by 1e4 must not change the hit point
+	Ray ray(Point(-1.0, 0.5, 0.5), Vector(1.0e4, 0.0, 0.0));
+	auto result = intersect(ray, unit_aabb());
+	ASSERT_TRUE(result.has_value());
+	ExpectPointEq(*result, 0.0, 0.5, 0.5);
 }

@@ -1,6 +1,7 @@
 #ifndef GEOMETRY_INTERSECT_HPP
 #define GEOMETRY_INTERSECT_HPP
 
+#include "Geometry/Bounds/bounding_box.hpp"
 #include "Geometry/Primitives/line.hpp"
 #include "Geometry/Primitives/plane.hpp"
 #include "Geometry/Primitives/point.hpp"
@@ -36,6 +37,17 @@ namespace Geometry
 	/// normal) are included; pass the result through Triangle::contains() or
 	/// check the normal if one-sided behaviour is required.
 	[[nodiscard]] std::optional<Point> intersect(Ray const& ray, Triangle const& triangle);
+
+	/// Returns the entry point of a ray into an axis-aligned bounding box using
+	/// the slab method, or std::nullopt if the ray misses the box entirely or
+	/// the box is entirely behind the ray origin.
+	///
+	/// When the ray origin is inside the box the returned point is the ray
+	/// origin itself (t_entry is clamped to 0).
+	///
+	/// A ray that grazes an edge or corner (t_entry == t_exit) is counted as a
+	/// hit — the returned point lies exactly on the boundary.
+	[[nodiscard]] std::optional<Point> intersect(Ray const& ray, BoundingBox const& box);
 
 } // namespace Geometry
 

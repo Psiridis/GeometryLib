@@ -2,6 +2,10 @@
 
 #include "Geometry/Queries/parallel.hpp"
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
 #include "utils/numerical_utils.hpp"
 
 namespace Geometry
@@ -163,6 +167,85 @@ namespace Geometry
 			return std::nullopt;
 
 		return ray.origin() + t * ray.direction();
+	}
+
+	// ── Ray ∩ BoundingBox (slab method) ───────────────────────────────────────
+	//
+	// Reference:
+	//   Williams, A., Barrus, S., Morley, R. K., & Shirley, P. (2005).
+	//   "An efficient and robust ray-box intersection algorithm."
+	//   Journal of Graphics Tools, 10(1), 49–54.
+	//   https://doi.org/10.1080/2151237X.2005.10129188
+	//
+	// For each axis i ∈ {x, y, z} the ray intersects two parallel planes
+	// ("slabs") at:
+	//   t_near_i = (box.min[i] − origin[i]) / direction[i]
+	//   t_far_i  = (box.max[i] − origin[i]) / direction[i]
+	//
+	// The ray is inside the slab when t ∈ [t_near_i, t_far_i].
+	// The ray is inside all three slabs simultaneously when
+	//   t_entry = max(t_near_x, t_near_y, t_near_z) ≤
+	//   t_exit  = min(t_far_x,  t_far_y,  t_far_z)
+	//
+	// Special cases:
+	//   - Direction component == 0: ray is parallel to that pair of slabs.
+	//     If the origin is outside them → miss (t_near = +∞, t_exit → -∞).
+	//     Use IEEE 754 ±∞ from division-by-zero: handled correctly by
+	//     std::min/max because ∞ comparisons are well-defined.
+	//   - t_exit < 0: box is entirely behind the ray origin → nullopt.
+	//   - t_entry < 0 ≤ t_exit: origin is inside the box → return origin (t=0).
+	//
+	std::optional<Point> intersect(Ray const& ray, BoundingBox const& box)
+	{
+		double t_entry = 0.0; // clamped: never return a point behind origin
+		double t_exit	 = std::numeric_limits<double>::infinity();
+
+		auto const& o = ray.origin();
+		auto const& d = ray.direction();
+
+		// X slab
+		{
+			double const inv = 1.0 / d.dx();
+			double t1				 = (box.min().x() - o.x()) * inv;
+			double t2				 = (box.max().x() - o.x()) * inv;
+			if (t1 > t2)
+				std::swap(t1, t2);
+			t_entry = std::max(t_entry, t1);
+			t_exit	= std::min(t_exit, t2);
+		}
+		if (t_entry > t_exit)
+			return std::nullopt;
+
+		// Y slab
+		{
+			double const inv = 1.0 / d.dy();
+			double t1				 = (box.min().y() - o.y()) * inv;
+			double t2				 = (box.max().y() - o.y()) * inv;
+			if (t1 > t2)
+				std::swap(t1, t2);
+			t_entry = std::max(t_entry, t1);
+			t_exit	= std::min(t_exit, t2);
+		}
+		if (t_entry > t_exit)
+			return std::nullopt;
+
+		// Z slab
+		{
+			double const inv = 1.0 / d.dz();
+			double t1				 = (box.min().z() - o.z()) * inv;
+			double t2				 = (box.max().z() - o.z()) * inv;
+			if (t1 > t2)
+				std::swap(t1, t2);
+			t_entry = std::max(t_entry, t1);
+			t_exit	= std::min(t_exit, t2);
+		}
+		if (t_entry > t_exit)
+			return std::nullopt;
+
+		// t_exit < 0 means the box is entirely behind the ray — already excluded
+		// by the t_entry = 0 clamp.  t_exit == 0 is a grazing touch on a face
+		// at the ray origin: still a valid hit.
+		return ray.origin() + t_entry * ray.direction();
 	}
 
 } // namespace Geometry

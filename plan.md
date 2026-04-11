@@ -181,7 +181,7 @@ Mark items with `[x]` as they are completed.
 
 ### Extended intersections (add to `Queries/intersect.hpp` / `Queries/intersect.cpp`)
 - [x] `intersect(Ray, Triangle)`     → `std::optional<Point>` — Möller–Trumbore algorithm
-- [ ] `intersect(Ray, BoundingBox)`  → `std::optional<Point>` — slab method
+- [x] `intersect(Ray, BoundingBox)`  → `std::optional<Point>` — slab method
 - [ ] `intersect(Segment, Plane)`    → `std::optional<Point>`
 
 ### CMake
