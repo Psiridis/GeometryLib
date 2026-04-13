@@ -1,6 +1,6 @@
 # GeometryLib → CAD Kernel Roadmap
 
-Evolve the current analytic primitives library into a full CAD kernel via 6 sequential phases.
+Evolve the current analytic primitives library into a full CAD kernel via 7 sequential phases.
 Each phase is independently verifiable and builds directly on the previous one.
 The approach mirrors the architecture of production CAD kernels (OpenCASCADE B-Rep model).
 
@@ -155,7 +155,8 @@ Note on spatial acceleration:
     ├── Queries/       # intersect, parallel, project, distance
     ├── Shapes/        # segment, triangle, circle             (Phase 2)
     ├── Bounds/        # bounding box, (later: OBB, BVH)      (Phase 2)
-    └── Transform/     # matrix, transform, coordinate frame  (Phase 3)
+    ├── Math/          # vector, matrix3x3, matrix4x4         (Phase 3)
+    └── Transform/     # transform, coordinate frame          (Phase 4)
     src/               # mirrors include/ layout
     tests/             # mirrors include/ layout
     ```
@@ -245,28 +246,49 @@ Note on spatial acceleration:
 
 ---
 
-## Phase 3 — Transform & Coordinate Frame
+## Phase 3 — Math Library
 
-**Goal:** Positional and orientational math required by all topology operations.
+**Goal:** Introduce a dedicated linear-algebra layer used by geometry and transforms.
 **Charter capability mapping:** Primitive entities and numerical foundations.
 
+### New folder: `Math` (core mathematical concepts)
+- [ ] `include/Geometry/Math/`
+- [ ] `src/Math/`
+- [ ] `tests/Math/`
+
+### Refactor
+- [ ] Move `Vector` from `Primitives` to `Math` with a temporary compatibility include
+- [ ] Update includes and CMake source lists for the new `Math` layout
+- [ ] Preserve API behavior and test coverage during the move
+
 ### New class: `Matrix3x3`
-- [ ] Header `include/Geometry/Transform/matrix3x3.hpp`
-- [ ] Source `src/Transform/matrix3x3.cpp`
+- [ ] Header `include/Geometry/Math/matrix3x3.hpp`
+- [ ] Source `src/Math/matrix3x3.cpp`
 - [ ] Construction from rows / columns / identity
 - [ ] `determinant()`, `inverse()`, `transpose()`
 - [ ] `operator*` (matrix × matrix, matrix × vector)
 - [ ] `operator==`, `operator!=`
-- [ ] Tests `tests/Transform/test_matrix3x3.cpp`
+- [ ] Tests `tests/Math/test_matrix3x3.cpp`
 
 ### New class: `Matrix4x4`
-- [ ] Header `include/Geometry/Transform/matrix4x4.hpp`
-- [ ] Source `src/Transform/matrix4x4.cpp`
+- [ ] Header `include/Geometry/Math/matrix4x4.hpp`
+- [ ] Source `src/Math/matrix4x4.cpp`
 - [ ] Construction from rows / identity
 - [ ] `determinant()`, `inverse()`, `transpose()`
 - [ ] `operator*` (matrix × matrix)
 - [ ] `operator==`, `operator!=`
-- [ ] Tests `tests/Transform/test_matrix4x4.cpp`
+- [ ] Tests `tests/Math/test_matrix4x4.cpp`
+
+### CMake
+- [ ] Add new source files to `cmake/GeometrySources.cmake`
+- [ ] Add new test files to `cmake/GeometryTestSources.cmake`
+
+---
+
+## Phase 4 — Transform & Coordinate Frame
+
+**Goal:** Build positional and orientational transform utilities on top of the math layer.
+**Charter capability mapping:** Primitive entities and numerical foundations.
 
 ### New class: `Transform`
 - [ ] Header `include/Geometry/Transform/transform.hpp`
@@ -295,7 +317,7 @@ Note on spatial acceleration:
 
 ---
 
-## Phase 4 — Curves & Surfaces (Geometric Carriers)
+## Phase 5 — Curves & Surfaces (Geometric Carriers)
 
 **Goal:** Abstract interfaces and concrete implementations that topological entities will reference.
 **Charter capability mapping:** Geometric carriers.
@@ -335,7 +357,7 @@ These are purely mathematical — no topology, no boundaries.
 
 ---
 
-## Phase 5 — Topology (B-Rep)
+## Phase 6 — Topology (B-Rep)
 
 **Goal:** Boundary Representation — connecting geometric carriers with adjacency and connectivity.
 **Charter capability mapping:** Topology representations.
@@ -372,7 +394,7 @@ These are purely mathematical — no topology, no boundaries.
 
 ---
 
-## Phase 6 — I/O & Interoperability
+## Phase 7 — I/O & Interoperability
 
 **Goal:** Read and write standard formats; provide a tessellation bridge to renderers.
 **Charter capability mapping:** Interoperability capabilities.
