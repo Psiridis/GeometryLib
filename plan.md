@@ -8,6 +8,43 @@ Mark items with `[x]` as they are completed.
 
 ---
 
+## Kernel Charter
+
+GeometryLib evolves toward a reusable B-Rep kernel library consumed by separate applications.
+
+Mission:
+
+- Provide a deterministic geometric and topological core for CAD workflows.
+- Keep the kernel independent from rendering and product UI concerns.
+
+Kernel scope:
+
+- Primitive entities and numerical foundations
+- Geometric entities (finite shapes, then abstract curve/surface carriers)
+- Query algorithms (parallel, intersect, project, distance, classification)
+- Spatial acceleration (AABB, then BVH and related structures)
+- Topology representations (Vertex, Edge/Coedge, Loop/Wire, Face, Shell, Solid)
+- Interoperability capabilities (neutral CAD import/export and translation)
+
+Architectural boundary:
+
+- The library owns deterministic geometry/topology/interoperability logic.
+- Visualization, UI interaction, scene graph handling, and product-specific adapters stay in downstream applications.
+
+Quality bar for every phase:
+
+- Numerically robust behavior with explicit tolerances and scale-aware predicates
+- Clear contracts and failure modes in public APIs
+- Regression and adversarial tests for each new capability
+- Backward-compatible API evolution unless a documented breaking change is approved
+
+Note on spatial acceleration:
+
+- Later kernel workflows repeatedly run candidate-search steps before exact geometry checks.
+- AABB and BVH provide this broad-phase filtering so topology, Boolean, picking, and interoperability passes avoid expensive all-to-all comparisons.
+
+---
+
 ## Tooling & Infrastructure
 
 - [x] Doxygen comments added to all headers (`///` style)
@@ -21,6 +58,7 @@ Mark items with `[x]` as they are completed.
 ## Phase 0 — Consolidate *(current)*
 
 **Goal:** Close known gaps before adding new code.
+**Charter capability mapping:** Cross-cutting quality gate for all kernel capabilities.
 
 ### 0.1 — Test coverage gaps
 
@@ -62,6 +100,7 @@ Mark items with `[x]` as they are completed.
 ## Phase 1 — Intersection & Spatial Queries
 
 **Goal:** Mathematical query operations that every higher layer depends on.
+**Charter capability mapping:** Query algorithms.
 **Design:** Free functions in `namespace Geometry`. Keeps classes unaware of each other.
 
 ### New header: `include/Geometry/Queries/intersect.hpp`
@@ -127,6 +166,7 @@ Mark items with `[x]` as they are completed.
 ## Phase 2 — Bounded Shapes (Layer 2 Geometry)
 
 **Goal:** Finite geometric shapes and acceleration structures built on top of Layer 1 primitives.
+**Charter capability mapping:** Geometric entities and initial spatial acceleration.
 
 ### New class: `Segment`
 - [x] Header `include/Geometry/Shapes/segment.hpp`
@@ -208,6 +248,7 @@ Mark items with `[x]` as they are completed.
 ## Phase 3 — Transform & Coordinate Frame
 
 **Goal:** Positional and orientational math required by all topology operations.
+**Charter capability mapping:** Primitive entities and numerical foundations.
 
 ### New class: `Matrix3x3`
 - [ ] Header `include/Geometry/Transform/matrix3x3.hpp`
@@ -257,6 +298,7 @@ Mark items with `[x]` as they are completed.
 ## Phase 4 — Curves & Surfaces (Geometric Carriers)
 
 **Goal:** Abstract interfaces and concrete implementations that topological entities will reference.
+**Charter capability mapping:** Geometric carriers.
 These are purely mathematical — no topology, no boundaries.
 
 ### Curves — `include/Geometry/Curves/`
@@ -296,6 +338,7 @@ These are purely mathematical — no topology, no boundaries.
 ## Phase 5 — Topology (B-Rep)
 
 **Goal:** Boundary Representation — connecting geometric carriers with adjacency and connectivity.
+**Charter capability mapping:** Topology representations.
 
 ### Topological hierarchy (bottom-up)
 
@@ -332,6 +375,7 @@ These are purely mathematical — no topology, no boundaries.
 ## Phase 6 — I/O & Interoperability
 
 **Goal:** Read and write standard formats; provide a tessellation bridge to renderers.
+**Charter capability mapping:** Interoperability capabilities.
 
 ### STL
 - [ ] `io/stl_writer.hpp` / `src/IO/stl_writer.cpp` — ASCII and binary write from a `Triangle` mesh

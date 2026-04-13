@@ -6,6 +6,42 @@ GeometryLib is a C++20 3D geometry library built with CMake. It provides analyti
 
 The project exports an installable library target (`GeometryLib::Geometry`), ships CMake package configuration files for downstream `find_package` consumers, and uses GoogleTest for unit testing.
 
+## Kernel charter
+
+GeometryLib evolves into a reusable CAD kernel centered on Boundary Representation (B-Rep), intended to be embedded by separate modeling or visualization applications.
+
+Mission:
+
+- Provide a deterministic, testable, and application-agnostic geometric core.
+- Expose stable APIs that downstream tools can integrate through `find_package` and versioned releases.
+
+Kernel scope:
+
+- Primitive entities and numerical foundations (Point, Vector, Line, Ray, Plane, transforms, tolerances)
+- Geometric entities (finite shapes and later abstract curve/surface carriers)
+- Query algorithms (parallelism, intersection, projection, distance, containment/classification)
+- Spatial acceleration structures (AABB first, then BVH and related indices)
+- Topology representations for B-Rep (Vertex, Edge/Coedge, Loop/Wire, Face, Shell, Solid)
+- Interoperability modules (neutral CAD import/export and translation into kernel topology)
+
+Architectural boundary:
+
+- This repository owns geometry, topology, kernel-level validation/healing, and interoperability logic.
+- Rendering, UI workflows, scene management, and product-specific integrations belong to downstream applications.
+
+Quality principles:
+
+- Numerical robustness over convenience (explicit tolerances and scale-independent predicates)
+- Deterministic behavior and clear failure contracts (assertions in debug, exceptions for callers)
+- Test-first evolution with adversarial and regression coverage for each new capability
+- Minimal coupling between layers so primitives, queries, carriers, topology, and I/O remain independently verifiable
+
+Why spatial acceleration is part of the kernel:
+
+- Many kernel operations repeatedly ask "which entities can possibly interact?" before running exact geometry tests.
+- Bounding structures (AABB first, then BVH) provide a broad-phase filter that avoids O(n^2) pairwise checks in picking, collision/clearance, Boolean preselection, and nearest-entity search.
+- This keeps higher-level topology and interoperability algorithms practical as model size grows.
+
 ## Project layout
 
 ```text
