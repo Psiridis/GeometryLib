@@ -4,7 +4,7 @@
 #include "Geometry/Primitives/plane.hpp"
 #include "Geometry/Primitives/point.hpp"
 #include "Geometry/Primitives/vector.hpp"
-#include "Geometry/tolerance.hpp"
+#include "Geometry/Settings/tolerance.hpp"
 
 namespace Geometry
 {

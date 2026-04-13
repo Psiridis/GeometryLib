@@ -1,13 +1,13 @@
 #ifndef NUMERICAL_UTILS_HPP
 #define NUMERICAL_UTILS_HPP
 
-#include "Geometry/tolerance.hpp"
+#include "Geometry/Settings/tolerance.hpp"
 
 namespace Geometry::utils
 {
 	/// Implementation-private aliases for the public tolerance constants.
 	/// All threshold comparisons in .cpp files must use these names;
-	/// change the values by editing include/Geometry/tolerance.hpp only.
+	/// the shared values are defined in Geometry/Settings/tolerance.hpp.
 	inline constexpr double k_abs_eps = Geometry::tolerance::k_abs_eps;
 	inline constexpr double k_rel_eps = Geometry::tolerance::k_rel_eps;
 

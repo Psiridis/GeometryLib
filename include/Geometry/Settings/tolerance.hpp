@@ -1,5 +1,5 @@
-#ifndef GEOMETRY_TOLERANCE_HPP
-#define GEOMETRY_TOLERANCE_HPP
+#ifndef GEOMETRY_SETTINGS_TOLERANCE_HPP
+#define GEOMETRY_SETTINGS_TOLERANCE_HPP
 
 namespace Geometry
 {
@@ -22,4 +22,4 @@ namespace Geometry
 	} // namespace tolerance
 } // namespace Geometry
 
-#endif // GEOMETRY_TOLERANCE_HPP
+#endif // GEOMETRY_SETTINGS_TOLERANCE_HPP

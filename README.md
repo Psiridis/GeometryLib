@@ -54,6 +54,7 @@ Geometry/
 │   └── GeometryTestSources.cmake   # lists all test source files
 ├── include/Geometry/
 │   ├── Primitives/   # point, vector, line, ray, plane
+│   ├── Settings/     # shared public tolerances and future kernel settings
 │   ├── Shapes/       # segment, triangle, circle
 │   ├── Bounds/       # bounding_box (AABB); later OBB, BVH
 │   └── Queries/      # intersect, parallel, project, distance
